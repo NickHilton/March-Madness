@@ -12,6 +12,6 @@ You will find the ORM models in `model_definitions`, the elo implementation in `
 I also used this to perform a very similar analysis on the Women's competition. Any comments and suggestions are welcome, particularly with the problem of optimising the parameters
 
 This is an adaption of a larger project I have to predict football scores and build a fantasy football model of which I have written up a report of my analysis here
-https://drive.google.com/open?id=0BwOFJMTMSjbyaE9KQ0RlQUxBc28
+https://drive.google.com/open?id=1mCGCTWuxvyWAXaOhiqt0ncUExs4LsOPf
 
 
