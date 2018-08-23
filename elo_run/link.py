@@ -1,6 +1,7 @@
 from elo_run.link_functions import *
 import numpy as np
 
+# Default model parameters
 model_params_default = {
     'rating': 1,
     'seed': 10,
@@ -15,26 +16,31 @@ model_params_default = {
 def predict(team_1, team_2, model_params=model_params_default):
     """
     Predicts the probablity that team_1 beats team_2 for a given set of model params
+
     :param team_1: (dict(keys = [rating, seed, FGP, R, FGP3]))
     :param team_2: (dict(keys = [rating, seed, FGP, R, FGP3]))
-    :param model_params:
-    :return:
+    :param model_params: (dict) of model parameters and their respective values
+    :return: (float)
     """
 
-    use_seeds = True if team_1['seed'] and team_2['seed'] else False
+    use_seeds = True if (team_1['seed'] and team_2['seed']) else False
 
+    # Team rating, Field goal percentage, average rebounds, 3 point field goal percentage
     params = ['rating', 'FGP', 'R', 'FGP3']
-    num_params = 4
 
     if use_seeds:
+        # Add in seed information
         params.append('seed')
-        num_params = 5
 
+        # For a 1 vs 16 seed give the 1 seed a 99% predicted probability
         if team_1['seed'] - team_2['seed'] >= 15:
             return 0.01
         if team_1['seed'] - team_2['seed'] <= -15:
             return 0.99
 
+    num_params = len(params)
+
+    # Initialise np vectors
     t1_vec = np.empty(num_params)
     t2_vec = np.empty(num_params)
     param_vec = np.empty(num_params)
@@ -44,6 +50,7 @@ def predict(team_1, team_2, model_params=model_params_default):
         t2_vec[n] = team_2[param]
         param_vec[n] = model_params[param]
 
+    # Value to input into link function
     theta = param_vec.dot(t1_vec - t2_vec)
 
     d = model_params['standard_devation']

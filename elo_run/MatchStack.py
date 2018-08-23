@@ -4,6 +4,9 @@ from models import engine, Match
 
 
 class MatchStack():
+    """
+    gets stack of matches in date order
+    """
     def __init__(self, Season):
         self.engine = engine
         Session = sessionmaker(bind=self.engine)

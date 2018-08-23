@@ -13,24 +13,3 @@ seaborn
 scipy
 selenium
 sqlalchemy
-from datetime import datetime
-start_date = datetime(2017,1,13)
-end_date = datetime(2018,2,14)
-
-# Add 3 to be safe
-total_days = (end_date - start_date).days + 3
-
-# subtract 1 to be safe
-end_date_days_back = (datetime.now() - end_date).days - 1
-
-days_per_job = 20
-
-import subprocess
-
-
-
-for i in range(total_days // days_per_job + 1):
-
-	from_days_ago = end_date_days_back + (i * days_per_job) - 1
-	days_back = days_per_job + 1
-	subprocess.run([f'heroku run:detached python manage.py cache_post_tagging_to_redshift --days_back={days_back} --from_days_ago={from_days_ago} --low_priority --brands=21380,16375,17298,15633,19803,15869,14630,16343,16087,16676'],shell=True, stdout=subprocess.PIPE)

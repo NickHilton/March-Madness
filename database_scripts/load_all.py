@@ -4,11 +4,17 @@ from models import Base, engine, Match, Team
 
 
 def load_matches():
+    """
+    Load matches from data into sqlite database
+
+    :return: (None)
+    """
     # Add Tourney Results
     Base.metadata.create_all(engine)
     file_name = '../data/NCAATourneyDetailedResults.csv'
     df = pd.read_csv(file_name)
     df['stage'] = 'T'
+
     # Create id containing season and day in season as a proxy for date overall
     df['mdid'] = df['Season'] * 1000 + df['DayNum']
     df['WFGP'] = df.WFGM / df.WFGA
@@ -17,7 +23,6 @@ def load_matches():
     df['LFGP'] = df.LFGM / df.LFGA
     df['LFGP3'] = df.LFGM3 / df.LFGA3
     df['LR'] = df.LOR + df.LDR
-    # df.to_sql(con=engine, index_label='id', name=Match.__tablename__, if_exists='replace')
 
     # Add Regular season Results
     file_name = '../data/RegularSeasonDetailedResults_updated.csv'
@@ -30,7 +35,6 @@ def load_matches():
     df2['LFGP'] = df2.LFGM / df2.LFGA
     df2['LFGP3'] = df2.LFGM3 / df2.LFGA3
     df2['LR'] = df2.LOR + df2.LDR
-    # df.to_sql(con=engine, index=False, name=Match.__tablename__, if_exists='append')
 
     # Add Secondary Tourney Results
     file_name = '../data/SecondaryTourneyCompactResults.csv'
@@ -47,6 +51,11 @@ def load_matches():
 
 
 def load_teams():
+    """
+    Add teams to database
+
+    :return: (None)
+    """
     # Add Teams
     Base.metadata.create_all(engine)
     file_name = '../data/Teams.csv'

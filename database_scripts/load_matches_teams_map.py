@@ -5,6 +5,12 @@ from models import Base, engine, matches_to_teams, Match
 
 
 def populate_matches_to_teams(Base):
+    """
+    Create map of matches to teams
+
+    :param Base: (sqlalcemy.declarativebase) Base class for declarative base definitions
+    :return: (None)
+    """
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()

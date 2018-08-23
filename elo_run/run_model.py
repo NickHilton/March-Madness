@@ -40,6 +40,12 @@ season = 2003
 
 
 def season_teams(Season):
+    """
+    Get team_ids for a given season
+
+    :param Season: (int) season
+    :return: (list(int))
+    """
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -54,6 +60,12 @@ def season_teams(Season):
 
 
 def season_team_seeds(Season):
+    """
+    Get team seeds in the tournament for a given season
+
+    :param Season: (int) season
+    :return: (dict)
+    """
     Session = sessionmaker(bind=engine)
     session = Session()
     team_to_seed = dict(session.query(Seed.TeamID, Seed.Seed).filter(Seed.Season == Season).all())
@@ -62,6 +74,12 @@ def season_team_seeds(Season):
 
 
 def get_most_recent_ratings(Season):
+    """
+    Get most recent ratings from previous season
+
+    :param Season: (int) season
+    :return: (dict)
+    """
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -82,6 +100,12 @@ def get_most_recent_ratings(Season):
 
 
 def set_up(Season):
+    """
+    Set Get all match and team info
+
+    :param Season: (int) season
+    :return:
+    """
     team_info = defaultdict(lambda: dict())
 
     team_ids = season_teams(Season)

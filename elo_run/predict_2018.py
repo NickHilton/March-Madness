@@ -3,7 +3,6 @@ from models import MatchPredictions
 from models import engine, Base
 
 
-
 MatchPredictions.__table__.drop(engine)
 Base.metadata.create_all(engine)
 

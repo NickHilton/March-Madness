@@ -5,6 +5,13 @@ from models import engine, Match
 
 
 def _calculate_distribution(results):
+    """
+    Calculate cumulative density function of all results to use as a method of evaluating the strength
+    of a given win
+
+    :param results: (pd.DataFrame) df of results
+    :return: (pd.Series) cumulative density function of scores
+    """
     delta_counts = results.groupby(by='Delta').mdid.count()
     total = delta_counts.sum()
     densityf = delta_counts / total
@@ -13,6 +20,13 @@ def _calculate_distribution(results):
 
 
 def _response_function(result, distribution):
+    """
+    Get p value of a given result from a given distribution
+
+    :param result: (int) score difference
+    :param distribution: (pd.Series) cumulative density function
+    :return: (float) in [0,1]
+    """
     p_val = distribution.get(result, None)
     if p_val:
         return p_val
@@ -23,6 +37,11 @@ def _response_function(result, distribution):
 
 
 def _collect_and_calculate():
+    """
+    Collect results and filter by Home, Away and Neutral
+
+    :return: (tuple(pd.DataFrame)) of home, away and neutral results
+    """
     Session = sessionmaker(bind=engine)
     session = Session()
     matches = session.query(Match.Delta, Match.WLoc, Match.mdid).filter(Match.Season >= 2003).all()

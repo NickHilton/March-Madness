@@ -2,6 +2,11 @@ import pandas as pd
 from models import Base, engine
 
 def load_seeds():
+    """
+    Load seeds into database
+
+    :return: (None)
+    """
     # Add Teams
     Base.metadata.create_all(engine)
     file_name = '../data/NCAATourneySeeds_updated.csv'
