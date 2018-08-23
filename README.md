@@ -9,5 +9,9 @@ It uses SQLAlchemy and sqlite3 to handle the data - data downloaded from Kaggle'
 
 You will find the ORM models in `model_definitions`, the elo implementation in `elo_run` and some database loading scripts in `database_scripts`
 
+I also used this to perform a very similar analysis on the Women's competition performing better in that one and coming in the top 25% of Kagglers in last year's competition
+
 This is an adaption of a larger project I have to predict football scores and build a fantasy football model of which I have written up a report of my analysis here
 https://drive.google.com/open?id=0BwOFJMTMSjbyaE9KQ0RlQUxBc28
+
+
