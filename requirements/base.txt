@@ -2,6 +2,7 @@ alembic
 certifi==2018.1.18
 numpy
 pandas
+torch
 python-dateutil
 pytz
 scikit-learn

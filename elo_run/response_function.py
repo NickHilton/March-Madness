@@ -4,22 +4,23 @@ from sqlalchemy.orm import sessionmaker
 from models import engine, Match
 
 
-def _calculate_distribution(results):
+def _calculate_distribution(results: pd.DataFrame) -> pd.Series:
     """
-    Calculate cumulative density function of all results to use as a method of evaluating the strength
+    Calculate cumulative density function of all results to use as a method of
+    evaluating the strength
     of a given win
 
     :param results: (pd.DataFrame) df of results
     :return: (pd.Series) cumulative density function of scores
     """
-    delta_counts = results.groupby(by='Delta').mdid.count()
+    delta_counts = results.groupby(by="Delta").mdid.count()
     total = delta_counts.sum()
     densityf = delta_counts / total
     cumdf = densityf.cumsum()
     return cumdf
 
 
-def _response_function(result, distribution):
+def _response_function(result: int, distribution: pd.Series) -> float:
     """
     Get p value of a given result from a given distribution
 
@@ -36,7 +37,7 @@ def _response_function(result, distribution):
         return _response_function(result - 1, distribution)
 
 
-def _collect_and_calculate():
+def _collect_and_calculate() -> tuple:
     """
     Collect results and filter by Home, Away and Neutral
 
@@ -44,14 +45,26 @@ def _collect_and_calculate():
     """
     Session = sessionmaker(bind=engine)
     session = Session()
-    matches = session.query(Match.Delta, Match.WLoc, Match.mdid).filter(Match.Season >= 2003).all()
+    matches = (
+        session.query(Match.Delta, Match.WLoc, Match.mdid)
+        .filter(Match.Season >= 2003)
+        .all()
+    )
     df = pd.DataFrame(matches)
 
-    neutrals = (df.loc[df['WLoc'] == 'N', ['Delta', 'mdid']]
-                ).append(-df.loc[df['WLoc'] == 'N', ['Delta', 'mdid']])
+    neutrals = pd.concat(
+        [
+            (df.loc[df["WLoc"] == "N", ["Delta", "mdid"]]),
+            (-df.loc[df["WLoc"] == "N", ["Delta", "mdid"]]),
+        ]
+    )
 
-    homes = (df.loc[df['WLoc'] == 'H', ['Delta', 'mdid']]
-             ).append(-df.loc[df['WLoc'] == 'A', ['Delta', 'mdid']])
+    homes = pd.concat(
+        [
+            (df.loc[df["WLoc"] == "H", ["Delta", "mdid"]]),
+            (-df.loc[df["WLoc"] == "A", ["Delta", "mdid"]]),
+        ]
+    )
 
     aways = -homes
 

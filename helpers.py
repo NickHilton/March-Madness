@@ -2,8 +2,13 @@ import sqlite3
 
 import pandas as pd
 
+import os
 
-def sqlite_to_df(query, db_file='../databases/turtle.db'):
+DATABASE_URL = os.environ["DATABASE_URL"]
+DATABASE = DATABASE_URL.split('sqlite:///')[1]
+
+
+def sqlite_to_df(query, db_file=DATABASE):
     conn = sqlite3.connect(db_file)
 
     cur = conn.cursor()

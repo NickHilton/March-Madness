@@ -12,6 +12,7 @@ session.close()
 team_stacks = {}
 
 for TeamID in teamids:
+    print(TeamID)
     team_stack = TeamMatchStack(TeamID)
     team_stack.update_match_stats()
 

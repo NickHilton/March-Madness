@@ -1,0 +1,26 @@
+Season,DayZero,RegionW,RegionX,RegionY,RegionZ
+1998,1997-10-27 00:00:00,East,Midwest,Mideast,West
+1999,1998-10-26 00:00:00,East,Mideast,Midwest,West
+2000,1999-11-01 00:00:00,East,Midwest,Mideast,West
+2001,2000-10-30 00:00:00,East,Midwest,Mideast,West
+2002,2001-10-29 00:00:00,East,West,Mideast,Midwest
+2003,2002-11-04 00:00:00,East,West,Mideast,Midwest
+2004,2003-11-03 00:00:00,East,Mideast,Midwest,West
+2005,2004-11-01 00:00:00,Chattanooga,Tempe,KansasCity,Philadelphia
+2006,2005-10-31 00:00:00,Albuquerque,Cleveland,Bridgeport,San Antonio
+2007,2006-10-30 00:00:00,Dallas,Dayton,Fresno,Greensboro
+2008,2007-11-05 00:00:00,Greensboro,Spokane,NewOrleans,OklahomaCity
+2009,2008-11-03 00:00:00,Berkeley,Trenton,OklahomaCity,Raleigh
+2010,2009-11-02 00:00:00,Dayton,Memphis,KansasCity,Sacramento
+2011,2010-11-01 00:00:00,Dallas,Spokane,Dayton,Philadelphia
+2012,2011-10-31 00:00:00,DesMoines,Fresno,Kingston,Raleigh
+2013,2012-11-05 00:00:00,Bridgeport,Norfolk,OklahomaCity,Spokane
+2014,2013-11-04 00:00:00,Lincoln,Stanford,Louisville,NotreDame
+2015,2014-11-03 00:00:00,Albany,Spokane,Greensboro,OklahomaCity
+2016,2015-11-02 00:00:00,Bridgeport,Dallas,Lexington,SiouxFalls
+2017,2016-10-31 00:00:00,Bridgeport,OklahomaCity,Lexington,Stockton
+2018,2017-10-30 00:00:00,Albany,Spokane,KansasCity,Lexington
+2019,2018-11-05 00:00:00,Albany,Chicago,Greensboro,Portland
+2020,2019-11-04 00:00:00,NA1,NA2,NA3,NA4
+2021,2020-11-02 00:00:00,Alamo,Hemisfair,Mercado,RiverWalk
+2022,2021-11-01 00:00:00,Bridgeport,Spokane,Greensboro,Wichita

@@ -15,3 +15,23 @@ This is an adaption of a larger project I have to predict football scores and bu
 https://drive.google.com/open?id=1mCGCTWuxvyWAXaOhiqt0ncUExs4LsOPf
 
 
+## Initialisation
+
+```bash
+# Initialise database
+sqlite3 DATABASE
+- SET DATABASE_URL
+
+# Upgrade Database to first state
+alembic upgrade 97e628707d2f
+
+# THis will load all initial data
+python load_all.py
+python load_seeds.py
+python load_matches_teams_map.py
+
+# Now upgrade database again
+alembic upgrade head
+
+# Now run the sql in score_diff.sql
+```

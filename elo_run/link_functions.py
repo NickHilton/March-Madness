@@ -1,6 +1,7 @@
 from scipy.stats import norm
 
-def normal_link(theta, d):
+
+def normal_link(theta: float, d: float) -> float:
     """
     Normal cdf function to use as a link from two team ratings to a predicted probability
 
@@ -11,7 +12,7 @@ def normal_link(theta, d):
     return norm.cdf(theta / d)
 
 
-def logistic_link(theta, d):
+def logistic_link(theta: float, d: float) -> float:
     """
     Logistic function to use as a link from two team ratings to a predicted probability
 
@@ -22,9 +23,10 @@ def logistic_link(theta, d):
     return 1 / (1 + 10 ** (-theta / d))
 
 
-def bi_logistic_link(theta, d):
+def bi_logistic_link(theta: float, d: float) -> float:
     """
-    Bi modal logistic function to use as a link from two team ratings to a predicted probability
+    Bi modal logistic function to use as a link from two team ratings to a
+    predicted probability
 
     :param theta: (float) value to investigate
     :param d: (float) spread parameter
@@ -35,4 +37,3 @@ def bi_logistic_link(theta, d):
     high_dist = 1 / (1 + 10 ** (-(theta + 2 * d) / d))
 
     return 0.5 * (high_dist + low_dist)
-

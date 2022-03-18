@@ -5,3 +5,4 @@ where NumOT = 0;
 UPDATE matches
 SET Delta = 0
 where NumOT > 0;
+

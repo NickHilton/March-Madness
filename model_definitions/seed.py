@@ -6,9 +6,12 @@ from model_definitions.team import Team
 
 
 class Seed(Base):
-    __tablename__ = 'seeds'
+    """
+    Seed information
+    """
+    __tablename__ = "seeds"
     TeamID = Column(Integer, ForeignKey(Team.TeamID), primary_key=True, nullable=False)
     Season = Column(Integer, primary_key=True)
     Seed = Column(Integer)
 
-    team = relationship('Team', foreign_keys=[TeamID])
+    team = relationship("Team", foreign_keys=[TeamID])
