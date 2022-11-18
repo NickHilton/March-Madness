@@ -62,3 +62,6 @@ The notebook `notebooks/Evaluate systems.ipynb` allows you to evaluate different
 ### Creating submission files for the kaggle competition
 The notebook `notebooks/Season-predictions-Updated-Ratings.ipynb` allows you to get a submission file for the Kaggle competition
 It uses final ELO ratings and then updates ratings probabilistically based on your predictions for each round before predicting the next round
+
+## Further Reading
+For an adaptation of the ELO system to the Premier League see [this paper](https://drive.google.com/file/d/1mCGCTWuxvyWAXaOhiqt0ncUExs4LsOPf/view?usp=sharing) which explores the topic in more detail
