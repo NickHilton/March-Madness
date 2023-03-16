@@ -18,14 +18,20 @@ from models import engine, Base, SEASON, SEASON_START
 response_fns = {"H": home_response, "A": away_response, "N": neutral_response}
 
 # List of parameters to try
-k_list = [25, 40, 45, 80, 150]
-seed_list = [-35, -40, -70, -150]
+# k_list = [25, 40, 45, 80, 150]
+k_list = [25, 40, 80, 150, 300]
+# seed_list = [-35, -40, -70, -150]
+seed_list = [-5, -20, -35, -40]
 d_list = [600]
 function_list = ["N", "B", "L"]
 link_function_list = {"N": normal_link, "B": bi_logistic_link, "L": logistic_link}
-FGP_list = [1200, 1600, 1800, 2500]
-R_list = [15, 20, 25, 30]
-FGP3_list = [-10, 0, 50, 500, 1000]
+# FGP_list = [1200, 1600, 1800, 2500]
+FGP_list = [1200, 2500, 5000]
+# R_list = [15, 20, 25, 30]
+R_list = [20, 100, 400]
+# FGP3_list = [-10, 0, 50, 500, 1000]
+FGP3_list = [0, 10, 1000, 5000]
+rating_list = [0.3, 1, 5]
 
 DEFAULT_SHAPE_PARAM = 600  # of ELO update func
 
@@ -49,7 +55,7 @@ def set_default_params() -> tuple:
 
 
 def set_up_elo_model(
-    k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float
+    k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float
 ) -> ELO:
     """
     Set up an elo system and model with given params
@@ -61,10 +67,11 @@ def set_up_elo_model(
     :param fgp: (float) field goal percentage weighting
     :param fgp3: (float) 3pt field goal percentage weighting
     :param r: (float) rebound weighting
+    :param rating: (float) rating weighting
     :return: (ELO) elo class with chosen link funcs, response funcs and param weights
     """
     model_params = {
-        "rating": 1,
+        "rating": rating,
         "seed": seed,
         "FGP": fgp,
         "R": r,
@@ -226,7 +233,7 @@ def save_evaluation(
 
 
 def run_full_evaluation(
-    k: int, seed: int, function_code: str, fgp: float, fgp3: float, r: float
+    k: int, seed: int, function_code: str, fgp: float, fgp3: float, r: float, rating: float
 ) -> None:
     """
     Run whole process for given params
@@ -237,18 +244,18 @@ def run_full_evaluation(
     :param fgp: (float) field goal percentage weighting
     :param fgp3: (float) 3pt field goal percentage weighting
     :param r: (float) rebound weighting
+    :param rating: (float) rating param weighting
     :return: (None) -> saves evaluations to the
     """
     link_function = link_function_list[function_code]
     elo = set_up_elo_model(
-        k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=r
+        k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=r,
+        rating=rating
     )
     match_predictions = run_system(elo)
 
-    rating_weight = 1.0
-
     save_evaluation(
-        rating=rating_weight,
+        rating=rating,
         k=k,
         seed=seed,
         function_code=function_code,
@@ -271,7 +278,7 @@ def evaluate_args(args):
 # Run the grid search of evaluations
 if __name__ == "__main__":
     # Get full param spave
-    lists = [k_list, seed_list, function_list, FGP_list, FGP3_list, R_list]
+    lists = [k_list, seed_list, function_list, FGP_list, FGP3_list, R_list, rating_list]
     param_space = list(itertools.product(*lists))
 
     # Use all bar 1 CPU
