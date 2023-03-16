@@ -228,7 +228,7 @@ detroit,3178
 detroit mercy,3178
 detroit-mercy,3178
 dixie st,3469
-Dixie State,3469
+dixie state,3469
 drake,3179
 drexel,3180
 duke,3181
@@ -345,6 +345,7 @@ holy-cross,3221
 houston,3222
 houston bap,3223
 houston baptist,3223
+houston chr,3223
 houston-baptist,3223
 howard,3224
 idaho,3225
@@ -425,6 +426,7 @@ lamar university,3249
 lamar-university,3249
 lehigh,3250
 liberty,3251
+lindenwood,3473
 lipscomb,3252
 little rock,3114
 little-rock,3114
@@ -560,7 +562,7 @@ morgan-st,3288
 morgan-state,3288
 morris brown,3289
 morris-brown,3289
-Mount Saint Mary`s,3291
+mount saint mary`s,3291
 mount st. mary's,3291
 mount st. marys,3291
 mount-st-marys,3291
@@ -749,6 +751,7 @@ princeton,3343
 providence,3344
 purdue,3345
 purdue fort wayne,3236
+queens nc,3474
 quinnipiac,3346
 radford,3347
 rhode island,3348
@@ -769,21 +772,21 @@ sacramento-st,3170
 sacramento-state,3170
 sacred heart,3357
 sacred-heart,3357
-Saint Bonaventure,3382
-Saint Francis (NY),3383
+saint bonaventure,3382
+saint francis (ny),3383
 saint francis (pa),3384
-Saint John`s,3385
+saint john`s,3385
 saint joseph's,3386
 saint joseph`s,3386
 saint joseph’s,3386
 saint louis,3387
 saint mary's,3388
 saint mary's (ca),3388
-Saint Mary`s,3388
+saint mary`s,3388
 saint peter's,3389
 saint peter`s,3389
 saint peter’s,3389
-Saint Thomas (Minn.),3472
+saint thomas (minn.),3472
 saint-francis-pa,3384
 saint-josephs,3386
 saint-louis,3387
@@ -791,7 +794,7 @@ saint-marys,3388
 saint-marys-ca,3388
 saint-peters,3389
 saintlouis,3387
-Sam Houston,3358
+sam houston,3358
 sam houston st,3358
 sam houston st.,3358
 sam houston state,3358
@@ -878,6 +881,7 @@ southern california,3425
 southern ill.,3356
 southern illinois,3356
 southern illinois-edwardsville,3188
+southern indiana,3475
 southern methodist,3374
 southern miss,3379
 southern miss.,3379
@@ -911,7 +915,7 @@ st louis,3387
 st mary's (ca),3388
 st mary's ca,3388
 st peter's,3389
-St Thomas MN,3472
+st thomas mn,3472
 st-bonaventure,3382
 st-francis-brooklyn,3383
 st-francis-ny,3383
@@ -940,6 +944,7 @@ stanford,3390
 stephen f. austin,3372
 stephen-f-austin,3372
 stetson,3391
+stonehill,3476
 stony brook,3392
 stony-brook,3392
 suny albany,3107
@@ -948,7 +953,7 @@ syracuse,3393
 tam c,3394
 tam c. christi,3394
 tarleton st,3470
-Tarleton State,3470
+tarleton state,3470
 tcu,3395
 temple,3396
 tenn-martin,3404
@@ -1002,6 +1007,7 @@ troy,3407
 troy st.,3407
 tulane,3408
 tulsa,3409
+tx a&m commerce,3477
 tx pan american,3410
 tx southern,3411
 uab,3412
@@ -1052,6 +1058,7 @@ utah,3428
 utah st,3429
 utah st.,3429
 utah state,3429
+utah tech,3469
 utah valley,3430
 utah valley st.,3430
 utah-st,3429
