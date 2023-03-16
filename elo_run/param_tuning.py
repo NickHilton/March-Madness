@@ -172,7 +172,7 @@ def save_evaluation(
         ].copy()
 
         # Get evaluation metrics for this season from predictions
-        tournament_log_loss, correct_predictions = evaluate_by_season(
+        tournament_loss, correct_predictions = evaluate_by_season(
             season_predictions
         )
 
@@ -192,7 +192,7 @@ def save_evaluation(
                 r,
                 fgp3,
                 season,
-                tournament_log_loss,
+                tournament_loss,
                 correct_predictions,
                 DEFAULT_SHAPE_PARAM,
             )
@@ -213,7 +213,7 @@ def save_evaluation(
             "R",
             "FGP3",
             "season",
-            "tournament_log_loss",
+            "tournament_loss",
             "correct_predictions",
             "d",
         ],
