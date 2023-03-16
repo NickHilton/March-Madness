@@ -14,3 +14,4 @@ seaborn
 scipy
 selenium
 sqlalchemy<2
+tqdm
