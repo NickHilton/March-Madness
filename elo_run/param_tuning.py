@@ -251,7 +251,7 @@ def run_full_evaluation(
         rating=rating_weight,
         k=k,
         seed=seed,
-        function_code=link_function,
+        function_code=function_code,
         fgp=fgp,
         fgp3=fgp3,
         r=r,
