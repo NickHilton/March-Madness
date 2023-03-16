@@ -13,4 +13,4 @@ matplotlib
 seaborn
 scipy
 selenium
-sqlalchemy
+sqlalchemy<2
