@@ -71,6 +71,11 @@ def load_teams():
     file_name = f"{DATA_PATH}/{DATA_PREFIX}Teams.csv"
     df = pd.read_csv(file_name, index_col="TeamID")
 
+    # Add in First/Last season columns for womens as they dont exist
+    for column in ['FirstD1Season', 'LastD1Season']:
+        if column not in df:
+            df[column] = None
+
     df.to_sql(
         con=engine, index_label="TeamID", name=Team.__tablename__, if_exists="replace"
     )
