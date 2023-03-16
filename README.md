@@ -8,11 +8,11 @@ March Madness are two annual end of season college basketball tournament, used t
 
 Every year millions around the country fill out brackets to predict the winners of the tournament, everyone employing different ways of picking winners, from form guides and expert opinions to which mascot you prefer. 
 
-The vast nature of data collected during sports games leaves the tounrament perfectly poised to apply some data science and predict results. Kaggle runs a competition ([mens](https://www.kaggle.com/c/mens-march-mania-2022), [womens](https://www.kaggle.com/c/womens-march-mania-2022/leaderboard)) for data scienctists to predict the results of the tournament.
+The vast nature of data collected during sports games leaves the tournament perfectly poised to apply some data science and predict results. Kaggle runs a competition ([mens](https://www.kaggle.com/c/mens-march-mania-2022), [womens](https://www.kaggle.com/c/womens-march-mania-2022/leaderboard)) for data scientists to predict the results of the tournament.
 
-The evaluation used to determine competition winners is the sum of the log loss of predictions vs results. 
+The evaluation used to determine competition winners is the sum of the Brier loss of predictions vs results. 
 
-For each possible match, you provide a probability of Team A beating Team B, and the score after the result is the log loss from the result [0,1] vs. the prediction. This penalises confident guesses being wrong harshly
+For each possible match, you provide a probability of Team A beating Team B, and the score after the result is the brier loss from the result [0,1] vs. the prediction. This penalises confident guesses being wrong more harshly
 
 This project implements an [elo type system](https://en.wikipedia.org/wiki/Elo_rating_system) most famously used for chess world rankings, to give team's ratings over time and predict tournament results.
 
