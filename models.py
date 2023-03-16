@@ -8,5 +8,5 @@ from model_definitions.evaluation_record import EvaluationRecord
 
 Base.metadata.create_all(bind=engine)
 
-SEASON = 2022
+SEASON = 2023
 SEASON_START = 2010
