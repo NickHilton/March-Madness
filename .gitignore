@@ -3,4 +3,8 @@
 __pycache__/
 */.ipynb_checkpoints/*
 databases/*
+data_male/*
+data_female/*
+submissions/*
 data_male/MMasseyOrdinals_thru_Season2023_Day128.csv
+
