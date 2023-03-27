@@ -37,12 +37,12 @@ def predict(team_1: dict, team_2: dict, model_params: Optional[dict] = None) -> 
     if use_seeds:
         # Add in seed information
         params.append("seed")
-
-        # For a 1 vs 16 seed give the 1 seed a 99% predicted probability
-        if team_1["seed"] - team_2["seed"] >= 15:
-            return 0.01
-        if team_1["seed"] - team_2["seed"] <= -15:
-            return 0.99
+        #
+        # # For a 1 vs 16 seed give the 1 seed a 99% predicted probability
+        # if team_1["seed"] - team_2["seed"] >= 15:
+        #     return 0.01
+        # if team_1["seed"] - team_2["seed"] <= -15:
+        #     return 0.99
 
     num_params = len(params)
 
