@@ -132,9 +132,15 @@ def set_up(Season: int, rating_seeds: Optional[dict] = None):
     if not rating_seeds:
         rating_seeds = dict()
 
+    default_rating = np.mean(list(rating_seeds.values()))
+    if np.isnan(default_rating):
+        print("No ratings found, using default rating")
+        default_rating = DEFAULT_RATING
+    print(f"Default rating: {default_rating}")
+
     for TeamID in team_ids:
         team_info[TeamID]["seed"] = team_to_seed.get(TeamID, None)
-        team_info[TeamID]["rating"] = rating_seeds.get(TeamID, DEFAULT_RATING)
+        team_info[TeamID]["rating"] = rating_seeds.get(TeamID, default_rating)
 
     season_match_stack = MatchStack(Season)
 
