@@ -285,7 +285,7 @@ def evaluate_args(args):
 if __name__ == "__main__":
     # Get full param spave
     lists = [k_list, seed_list, function_list, FGP_list, FGP3_list, R_list, rating_list]
-    param_space = list(itertools.product(*lists))[:5]
+    param_space = list(itertools.product(*lists))
 
     # Use all bar 1 CPU
     pool = Pool(processes=cpu_count() - 1)

@@ -12,7 +12,7 @@ DATA_PATH = os.environ['DATA_PATH'] + "/" + os.environ["DATA_PREFIX"]
 gender = "WOMENS" if os.environ["DATA_PREFIX"] == "W" else "MENS"
 
 
-NUM_BRACKETS = 100_000
+NUM_BRACKETS = 1000
 # Get the most recent stats before the tournament
 def get_most_recent_stats(Season):
     """
@@ -246,7 +246,7 @@ def evaluate_season(elo, season):
     df_full_sim = pd.DataFrame(full_sim, columns=['Tournament', 'Bracket', 'Slot', 'Team'])
 
     num_brackets_to_score = {}
-    for i in [1000, 10_000, 20_000, 40_000, 50_000, 70_000, 80_000, 100_000]:
+    for i in [100, 500, 1000]:
         score = calc_evaluation_score(df_full_sim.query(f"Bracket <= {i}"), df_actual)
         num_brackets_to_score[i] = score
 
