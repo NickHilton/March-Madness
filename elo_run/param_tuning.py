@@ -286,9 +286,11 @@ if __name__ == "__main__":
     # Get full param spave
     lists = [k_list, seed_list, function_list, FGP_list, FGP3_list, R_list, rating_list]
     param_space = list(itertools.product(*lists))
+    random.shuffle(param_space)
 
     # Use all bar 1 CPU
-    pool = Pool(processes=cpu_count() - 1)
+    # pool = Pool(processes=cpu_count() - 1)
+    pool = Pool(processes=4)
 
     # for params in param_space:
     #     evaluate_args(params)
