@@ -136,7 +136,7 @@ def set_up(Season: int, rating_seeds: Optional[dict] = None):
     if np.isnan(default_rating):
         print("No ratings found, using default rating")
         default_rating = DEFAULT_RATING
-    print(f"Default rating: {default_rating}")
+    # print(f"Default rating: {default_rating}")
 
     for TeamID in team_ids:
         team_info[TeamID]["seed"] = team_to_seed.get(TeamID, None)

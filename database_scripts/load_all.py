@@ -7,6 +7,13 @@ DATA_PATH = os.environ["DATA_PATH"]
 DATA_PREFIX = os.environ["DATA_PREFIX"]
 
 
+def _add_match_id(df):
+    # Create match id for searching
+    lowest_id = df.loc[:, ["WTeamID", "LTeamID"]].min(axis=1)
+    highest_id = df.loc[:, ["WTeamID", "LTeamID"]].max(axis=1)
+    df["MatchID"] = lowest_id * 100_000 + highest_id
+
+
 def load_matches():
     """
     Load matches from data into sqlite database
@@ -21,6 +28,7 @@ def load_matches():
 
     # Create id containing season and day in season as a proxy for date overall
     df["mdid"] = df["Season"] * 1000 + df["DayNum"]
+    _add_match_id(df)
     df["WFGP"] = df.WFGM / df.WFGA
     df["WFGP3"] = df.WFGM3 / df.WFGA3
     df["WR"] = df.WOR + df.WDR
@@ -33,6 +41,7 @@ def load_matches():
     df2 = pd.read_csv(file_name)
     df2["stage"] = "R"
     df2["mdid"] = df2["Season"] * 1000 + df2["DayNum"]
+    _add_match_id(df2)
     df2["WFGP"] = df2.WFGM / df2.WFGA
     df2["WFGP3"] = df2.WFGM3 / df2.WFGA3
     df2["WR"] = df2.WOR + df2.WDR
@@ -45,19 +54,21 @@ def load_matches():
         file_name = f"{DATA_PATH}/{DATA_PREFIX}SecondaryTourneyCompactResults.csv"
         df3 = pd.read_csv(file_name)
         df3["stage"] = "S"
+        _add_match_id(df3)
         df3.drop("SecondaryTourney", axis=1, inplace=True)
         df3["mdid"] = df3["Season"] * 1000 + df3["DayNum"]
 
     else:
         df3 = pd.DataFrame()
 
-    df_final = df.append(df2).append(df3)
+    df_final = pd.concat([df, df2, df3], ignore_index=True)
     df_final.sort_values(by="mdid", inplace=True)
     df_final.reset_index(drop=True, inplace=True)
 
-    df_final.to_sql(
-        con=engine, index_label="id", name=Match.__tablename__, if_exists="replace"
-    )
+    with engine.connect() as connection:
+        df_final.to_sql(
+            con=connection.connection, index_label="id", name=Match.__tablename__, if_exists="replace"
+        )
 
 
 def load_teams():
@@ -76,9 +87,10 @@ def load_teams():
         if column not in df:
             df[column] = None
 
-    df.to_sql(
-        con=engine, index_label="TeamID", name=Team.__tablename__, if_exists="replace"
-    )
+    with engine.connect() as connection:
+        df.to_sql(
+            con=connection.connection, index_label="TeamID", name=Team.__tablename__, if_exists="replace"
+        )
 
 
 load_teams()

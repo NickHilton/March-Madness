@@ -1,15 +1,16 @@
 import itertools
+import random
 from multiprocessing import Pool, cpu_count
 
 import pandas as pd
 import tqdm
 
-from elo_run.evaluation import evaluate_by_season
+from elo_run.bracket_evaluation import evaluate_season
+from elo_run.elo import ELO
 from elo_run.link import predict
 from elo_run.link_functions import *
 from elo_run.response_function import home_response, away_response, neutral_response
 from elo_run.run_model import run_model_one_season
-from elo_run.elo import ELO
 from elo_run.update_rating import update_function
 from models import EvaluationRecord
 from models import engine, Base, SEASON, SEASON_START
@@ -55,7 +56,7 @@ def set_default_params() -> tuple:
 
 
 def set_up_elo_model(
-    k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float
+        k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float
 ) -> ELO:
     """
     Set up an elo system and model with given params
@@ -145,14 +146,15 @@ def run_system(elo: ELO, end_season: int = SEASON - 1) -> pd.DataFrame:
 
 
 def save_evaluation(
-    rating: float,
-    k: int,
-    seed: int,
-    function_code: str,
-    fgp: float,
-    fgp3: float,
-    r: float,
-    match_predictions: pd.DataFrame,
+        rating: float,
+        k: int,
+        seed: int,
+        function_code: str,
+        fgp: float,
+        fgp3: float,
+        r: float,
+        match_predictions: pd.DataFrame,
+        elo
 ):
     """
     Save evaluations for further analysis
@@ -179,31 +181,33 @@ def save_evaluation(
         ].copy()
 
         # Get evaluation metrics for this season from predictions
-        tournament_loss, correct_predictions = evaluate_by_season(
-            season_predictions
+        num_brackets_to_tournament_loss = evaluate_season(
+            elo, season
         )
 
-        result_strings = [
-            str(x) for x in (rating, k, seed, function_code, fgp, r, fgp3, season)
-        ]
-        evaluation_id = "_".join(result_strings) + f"_{DEFAULT_SHAPE_PARAM}"
+        for num_brackets, tournament_loss in num_brackets_to_tournament_loss.items():
+            result_strings = [
+                str(x) for x in (rating, k, seed, function_code, fgp, r, fgp3, season, num_brackets)
+            ]
 
-        results.append(
-            (
-                evaluation_id,
-                rating,
-                k,
-                seed,
-                function_code,
-                fgp,
-                r,
-                fgp3,
-                season,
-                tournament_loss,
-                correct_predictions,
-                DEFAULT_SHAPE_PARAM,
+            evaluation_id = "_".join(result_strings) + f"_{DEFAULT_SHAPE_PARAM}" + f"_{str(random.random())[:7]}"
+
+            results.append(
+                (
+                    evaluation_id,
+                    rating,
+                    k,
+                    seed,
+                    function_code,
+                    fgp,
+                    r,
+                    fgp3,
+                    season,
+                    tournament_loss,
+                    num_brackets,
+                    DEFAULT_SHAPE_PARAM,
+                )
             )
-        )
 
         season += 1
 
@@ -226,14 +230,15 @@ def save_evaluation(
         ],
     )
 
-    # Save to the db
-    df.to_sql(
-        con=engine, index=False, name=EvaluationRecord.__tablename__, if_exists="append"
-    )
+    with engine.connect() as conn:
+        # Save to the db
+        df.to_sql(
+            con=conn.connection, index=False, name=EvaluationRecord.__tablename__, if_exists="append"
+        )
 
 
 def run_full_evaluation(
-    k: int, seed: int, function_code: str, fgp: float, fgp3: float, r: float, rating: float
+        k: int, seed: int, function_code: str, fgp: float, fgp3: float, r: float, rating: float
 ) -> None:
     """
     Run whole process for given params
@@ -263,6 +268,7 @@ def run_full_evaluation(
         fgp3=fgp3,
         r=r,
         match_predictions=match_predictions,
+        elo=elo
     )
 
 
@@ -279,13 +285,16 @@ def evaluate_args(args):
 if __name__ == "__main__":
     # Get full param spave
     lists = [k_list, seed_list, function_list, FGP_list, FGP3_list, R_list, rating_list]
-    param_space = list(itertools.product(*lists))
+    param_space = list(itertools.product(*lists))[:5]
 
     # Use all bar 1 CPU
     pool = Pool(processes=cpu_count() - 1)
 
+    # for params in param_space:
+    #     evaluate_args(params)
+
     # Track progress and run evaluations
     for _ in tqdm.tqdm(
-        pool.imap_unordered(evaluate_args, param_space), total=len(param_space)
+            pool.imap_unordered(evaluate_args, param_space), total=len(param_space)
     ):
         pass

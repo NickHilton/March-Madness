@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, VARCHAR
 from sqlalchemy.orm import relationship
 
 from model_definitions import Base
@@ -13,5 +13,6 @@ class Seed(Base):
     TeamID = Column(Integer, ForeignKey(Team.TeamID), primary_key=True, nullable=False)
     Season = Column(Integer, primary_key=True)
     Seed = Column(Integer)
+    SeedSlot = Column(VARCHAR(4))
 
     team = relationship("Team", foreign_keys=[TeamID])

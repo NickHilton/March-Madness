@@ -43,6 +43,7 @@ class Match(Base):
     Season = Column(Integer, ForeignKey(Seed.Season))
     DayNum = Column(Integer)
     mdid = Column(Integer)
+    MatchID = Column(Integer)
     stage = Column(VARCHAR(1))
     WTeamID = Column(Integer, ForeignKey(Team.TeamID))
     WScore = Column(Integer)
