@@ -184,6 +184,11 @@ def run_study(
         seed_params = seed_data.get("params", seed_data)
         # Fill in defaults for any missing params (e.g. old 9-param files)
         defaults = {"to_margin": 0.0, "off_reb_rate": 0.0, "def_reb_rate": 0.0, "massey_rank": 0.0, "decay": 1.0}
+        # Fix zero values for log-scale params (Optuna can't enqueue 0 for log distributions)
+        log_params_min = {"fgp": 500, "reb": 5, "rating": 0.1}
+        for p, minval in log_params_min.items():
+            if p in seed_params and seed_params[p] == 0:
+                seed_params[p] = minval
         for k, v in defaults.items():
             if k not in seed_params:
                 seed_params[k] = v
