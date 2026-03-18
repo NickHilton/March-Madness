@@ -191,16 +191,16 @@ def main():
     )
     args = parser.parse_args()
 
+    gender = args.gender
+    if not gender:
+        prefix = os.environ.get("DATA_PREFIX", "M")
+        gender = "womens" if prefix == "W" else "mens"
+
     if args.params_json:
         params = json.loads(args.params_json)
     else:
         with open("default_params.json") as f:
             all_params = json.load(f)
-
-        gender = args.gender
-        if not gender:
-            prefix = os.environ.get("DATA_PREFIX", "M")
-            gender = "womens" if prefix == "W" else "mens"
 
         params = all_params[gender]
 

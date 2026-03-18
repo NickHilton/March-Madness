@@ -350,6 +350,50 @@ def run_study(
     print(f"  {'-'*37}")
     print(f"  {'AVERAGE':<8} {avg_loss:>10.4f} {avg_correct:>9.1%}")
 
+    # Run 2026 bracket simulation with best params
+    print(f"\n  Running 2026 bracket simulation with best params...")
+    try:
+        # Write best params to default_params.json temporarily
+        try:
+            with open("default_params.json") as f:
+                original_defaults = f.read()
+        except FileNotFoundError:
+            original_defaults = None
+
+        with open("default_params.json", "w") as f:
+            json.dump({gender: params_out}, f, indent=2)
+
+        result = subprocess.run(
+            ["python", "generate_submission.py", "--gender",
+             "M" if gender == "mens" else "W",
+             "--description", f"optuna_{gender}_{timestamp}"],
+            capture_output=True, text=True, timeout=300,
+            env={**os.environ},
+        )
+        # Print only the simulation output (from MONTE CARLO onwards)
+        output_lines = result.stdout.split("\n")
+        in_sim = False
+        in_matchups = False
+        for line in output_lines:
+            if "FIRST ROUND MATCHUP" in line:
+                in_matchups = True
+            if "MONTE CARLO" in line:
+                in_matchups = False
+                in_sim = True
+            if in_matchups or in_sim:
+                print(line)
+        if result.returncode != 0 and not in_sim:
+            print(f"  Warning: generate_submission exited with code {result.returncode}")
+            if result.stderr:
+                print(f"  {result.stderr[:500]}")
+    except Exception as e:
+        print(f"  Warning: bracket simulation failed: {e}")
+    finally:
+        # Restore original default_params.json
+        if original_defaults is not None:
+            with open("default_params.json", "w") as f:
+                f.write(original_defaults)
+
     print()
     return study
 

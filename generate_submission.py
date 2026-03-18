@@ -563,7 +563,7 @@ def main():
                     winner_key = info["winner"]  # "a" or "b"
                     args.first_four_results[slot] = info[winner_key]["id"]
 
-    # Parse model params from eval ID or --params
+    # Parse model params from eval ID, --params, or default_params.json
     if args.eval_id:
         print(f"Loading params from evaluation: {args.eval_id}")
         params = load_params_from_eval(args.eval_id)
@@ -574,6 +574,7 @@ def main():
         reb = params["R"]
         fgp3 = params["FGP3"]
         rating = params["rating"]
+        dp = {}
     elif args.params:
         vals = args.params.split("\t")
         k = int(vals[0])
@@ -583,15 +584,19 @@ def main():
         reb = float(vals[4])
         fgp3 = float(vals[5])
         rating = float(vals[6])
+        dp = {}
     else:
-        # Default params
-        k = 25
-        seed = -35.0
-        link = "N"
-        fgp = 1200.0
-        reb = 20.0
-        fgp3 = 0.0
-        rating = 5.0
+        # Load all params from default_params.json
+        with open("default_params.json") as f:
+            all_default = json.load(f)
+        dp = all_default.get(gender_key, {})
+        k = dp.get("k", 25)
+        seed = dp.get("seed", -35.0)
+        link = dp.get("link", "N")
+        fgp = dp.get("fgp", 1200.0)
+        reb = dp.get("reb", 20.0)
+        fgp3 = dp.get("fgp3", 0.0)
+        rating = dp.get("rating", 5.0)
 
     link_function = link_function_list[link]
 
@@ -600,13 +605,6 @@ def main():
     print(f"Params: k={k}, seed={seed}, link={link}, FGP={fgp}, R={reb}, FGP3={fgp3}, rating={rating}")
     if args.gamble_team:
         print(f"Gamble: team {args.gamble_team} through round {args.gamble_round}")
-
-    # Set up ELO model - load extended params from default_params.json
-    dp = {}
-    if not args.eval_id and not args.params:
-        with open("default_params.json") as f:
-            all_default = json.load(f)
-        dp = all_default.get(gender_key, {})
 
     elo = set_up_elo_model(
         k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=reb, rating=rating,
