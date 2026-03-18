@@ -596,8 +596,24 @@ def main():
         print(f"Gamble: team {args.gamble_team} through round {args.gamble_round}")
 
     # Set up ELO model
+    d_param = 600.0
+    alpha_param = 0.0
+
+    # Try to get d and alpha from eval record or default params
+    if args.eval_id:
+        # These would come from the params dict if stored
+        pass
+    elif not args.params:
+        # Load from default_params.json
+        with open("default_params.json") as f:
+            all_default = json.load(f)
+        dp = all_default.get(gender_key, {})
+        d_param = dp.get("d", 600.0)
+        alpha_param = dp.get("alpha", 0.0)
+
     elo = set_up_elo_model(
-        k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=reb, rating=rating
+        k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=reb, rating=rating,
+        d=d_param, alpha=alpha_param,
     )
 
     # Run model to get match predictions

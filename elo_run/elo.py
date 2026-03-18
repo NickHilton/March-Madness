@@ -5,7 +5,7 @@ class ELO:
     """
 
     def __init__(
-        self, link_function, response_functions, update_function, model_params, K
+        self, link_function, response_functions, update_function, model_params, K, alpha=0.0
     ):
 
         self.link = link_function
@@ -13,6 +13,7 @@ class ELO:
         self.update = update_function
         self.model_params = model_params
         self.K = K
+        self.alpha = alpha
 
     def update_rating(self, x_a, x_b, y, location):
         """
@@ -42,9 +43,11 @@ class ELO:
         :param location: (str) of team a in ['H', 'A', 'N']
         :return: (float) p value of result
         """
-        response = self.response_functions[location](y)
-
-        return response
+        margin_response = self.response_functions[location](y)
+        if self.alpha == 0.0:
+            return margin_response
+        win_indicator = 1.0 if y > 0 else (0.5 if y == 0 else 0.0)
+        return self.alpha * win_indicator + (1 - self.alpha) * margin_response
 
     def predict(self, x_a, x_b):
         """

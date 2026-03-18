@@ -6,5 +6,8 @@ databases/*
 data_male/**/*.csv
 data_female/**/*.csv
 submissions/**/*.csv
+candidate_params/*
+**.db
+.env
 data_male/MMasseyOrdinals_thru_Season2023_Day128.csv
 

@@ -55,7 +55,8 @@ def set_default_params() -> tuple:
 
 
 def set_up_elo_model(
-        k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float
+        k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float,
+        d: float = 600.0, alpha: float = 0.0,
 ) -> ELO:
     """
     Set up an elo system and model with given params
@@ -68,6 +69,8 @@ def set_up_elo_model(
     :param fgp3: (float) 3pt field goal percentage weighting
     :param r: (float) rebound weighting
     :param rating: (float) rating weighting
+    :param d: (float) link function spread parameter (standard deviation)
+    :param alpha: (float) response blending: 0.0 = margin-only, 1.0 = win/loss-only
     :return: (ELO) elo class with chosen link funcs, response funcs and param weights
     """
     model_params = {
@@ -76,7 +79,7 @@ def set_up_elo_model(
         "FGP": fgp,
         "R": r,
         "FGP3": fgp3,
-        "standard_deviation": 600,
+        "standard_deviation": d,
         "link": link_function,
     }
 
@@ -87,6 +90,7 @@ def set_up_elo_model(
         update_function=update_function,
         model_params=model_params,
         K=k,
+        alpha=alpha,
     )
 
     return elo

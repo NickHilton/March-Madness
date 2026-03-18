@@ -38,6 +38,8 @@ def run_and_report(params: dict, name: str = None, gender: str = "M") -> pd.Data
         fgp3=params["fgp3"],
         r=params["reb"],
         rating=params["rating"],
+        d=params.get("d", 600.0),
+        alpha=params.get("alpha", 0.0),
     )
 
     total_seasons = SEASON - 1 - SEASON_START + 1
