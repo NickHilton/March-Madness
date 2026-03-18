@@ -150,6 +150,7 @@ def run_study(
     n_jobs: int = 4,
     study_name: str = None,
     log_every: int = 25,
+    enqueue: str = None,
 ):
     """Create and run an Optuna study."""
 
@@ -166,6 +167,15 @@ def run_study(
         direction="minimize",
         pruner=pruner,
     )
+
+    # Enqueue seed params so Optuna evaluates them first
+    if enqueue:
+        with open(enqueue) as f:
+            seed_data = json.load(f)
+        # Support both raw param files and full output files with nested "params" key
+        seed_params = seed_data.get("params", seed_data)
+        study.enqueue_trial(seed_params)
+        print(f"\n  Enqueued seed params from {enqueue}")
 
     print(f"\nStarting Optuna study: {study_name}")
     print(f"  Trials: {n_trials}, Jobs: {n_jobs}")
@@ -353,6 +363,10 @@ def main():
         "--log-every", type=int, default=25,
         help="Print leaderboard every N trials (default: 25)",
     )
+    parser.add_argument(
+        "--enqueue", type=str, default=None,
+        help="Path to a JSON file with params to evaluate first (seeds the study)",
+    )
     args = parser.parse_args()
 
     run_study(
@@ -361,6 +375,7 @@ def main():
         n_jobs=args.n_jobs,
         study_name=args.study_name,
         log_every=args.log_every,
+        enqueue=args.enqueue,
     )
 
 
