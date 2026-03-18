@@ -64,7 +64,7 @@ class Match(Base):
     WOR = Column(Integer)
     WDR = Column(Integer)
     WR = Column(Integer)
-    WR_avg = Column(Integer)
+    WR_avg = Column(Float)
     WAst = Column(Integer)
     WTO = Column(Integer)
     WStl = Column(Integer)
@@ -161,8 +161,8 @@ class Match(Base):
             "Season",
             "mdid",
             "stage",
-            "WTeamID",
-            "WScore",
+            "LTeamID",
+            "LScore",
             "NumOT",
             "LFGP",
             "LFGP_avg",

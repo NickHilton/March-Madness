@@ -3,6 +3,9 @@ from sqlalchemy.orm import sessionmaker
 
 from models import engine, Match
 
+# Lazy-loaded distributions (computed on first use, not at import time)
+_distributions = {}
+
 
 def _calculate_distribution(results: pd.DataFrame) -> pd.Series:
     """
@@ -29,12 +32,17 @@ def _response_function(result: int, distribution: pd.Series) -> float:
     :return: (float) in [0,1]
     """
     p_val = distribution.get(result, None)
-    if p_val:
+    if p_val is not None:
         return p_val
     if result < distribution.index[0]:
         return 0
-    else:
-        return _response_function(result - 1, distribution)
+    if result > distribution.index[-1]:
+        return 1.0
+    # Find nearest lower index value
+    idx = distribution.index.searchsorted(result, side="right") - 1
+    if idx < 0:
+        return 0
+    return distribution.iloc[idx]
 
 
 def _collect_and_calculate() -> tuple:
@@ -50,6 +58,7 @@ def _collect_and_calculate() -> tuple:
         .filter(Match.Season >= 2003)
         .all()
     )
+    session.close()
     df = pd.DataFrame(matches)
 
     neutrals = pd.concat(
@@ -71,20 +80,23 @@ def _collect_and_calculate() -> tuple:
     return homes, neutrals, aways
 
 
-home_results, neutral_results, away_results = _collect_and_calculate()
-
-home_distribution = _calculate_distribution(home_results)
-away_distribution = _calculate_distribution(away_results)
-neutral_distribution = _calculate_distribution(neutral_results)
+def _get_distributions():
+    """Load distributions on first call, cache for subsequent calls."""
+    if not _distributions:
+        home_results, neutral_results, away_results = _collect_and_calculate()
+        _distributions["H"] = _calculate_distribution(home_results)
+        _distributions["A"] = _calculate_distribution(away_results)
+        _distributions["N"] = _calculate_distribution(neutral_results)
+    return _distributions
 
 
 def home_response(result):
-    return _response_function(result, home_distribution)
+    return _response_function(result, _get_distributions()["H"])
 
 
 def away_response(result):
-    return _response_function(result, away_distribution)
+    return _response_function(result, _get_distributions()["A"])
 
 
 def neutral_response(result):
-    return _response_function(result, neutral_distribution)
+    return _response_function(result, _get_distributions()["N"])

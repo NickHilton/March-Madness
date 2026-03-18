@@ -1,0 +1,534 @@
+
+Skip to
+content
+Kaggle
+
+    Home
+
+    Competitions
+
+    Datasets
+
+    Models
+
+    Benchmarks
+
+    Game Arena
+
+    Code
+
+    Discussions
+
+    Learn
+
+    More
+
+​
+Kaggle uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic.
+Learn more
+OK, Got it.
+Kaggle · Featured Prediction Competition · a day to go
+March Machine Learning Mania 2026
+
+Forecast the 2026 NCAA Basketball Tournaments
+March Machine Learning Mania 2026
+Dataset Description
+
+Each season there are thousands of NCAA® basketball games played between Division I college basketball teams, culminating in March Madness®, the national championship men's and women's tournaments that run from mid-March until their championship games in early April. We have provided a large amount of historical data about college basketball games and teams, going back many years. Armed with this historical data, you can explore it and develop your own distinctive ways of predicting March Madness® game outcomes.
+
+The data files incorporate both men's data and women's data. The files that pertain only to men's data will start with the letter prefix M, and the files that pertain only to women's data will start with the letter prefix W. Some files span both men's and women's data, such as Cities and Conferences.
+The MTeamSpellings and WTeamSpellings files, which are listed in the bottom section below, may help you map external team references into our own Team ID structure.
+
+We extend our gratitude to Kenneth Massey for providing much of the historical data.
+
+Special Acknowledgment to Jeff Sonas of Sonas Consulting for his support in assembling the dataset for this competition.
+File descriptions
+
+Below we describe the format and fields of the competition data files. All of the files are complete through February 4th of the current season. As we get closer to the tournament in mid-March, we will provide updates to these files to incorporate data from the remaining weeks of the current season.
+Data Section 1 - The Basics
+
+This section provides everything you need to build a simple prediction model and submit predictions.
+
+    Team ID's and Team Names
+    Tournament seeds since 1984-85 season
+    Final scores of all regular season, conference tournament, and NCAA® tournament games since 1984-85 season
+    Season-level details including dates and region names
+    Example submission files
+
+By convention, when we identify a particular season, we will reference the year that the season ends in, not the year that it starts in.
+
+Data Section 1 file: MTeams.csv and WTeams.csv
+
+These files identify the different college teams present in the dataset .
+
+    TeamID - a 4 digit id number, uniquely identifying each NCAA® men's or women's team. A school's TeamID does not change from one year to the next, so for instance the Duke men's TeamID is 1181 for all seasons. The men's team ID's range from 1000-1999, whereas all of the women's team ID's range from 3000-3999.
+    TeamName - a compact spelling of the team's college name, 16 characters or fewer.
+    FirstD1Season - the first season in our dataset that the school was a Division-I school. This column is only present in the men's data, so it is not found in WTeams.csv.
+    LastD1Season - the last season in our dataset that the school was a Division-I school. For any teams that are currently Division-I, they will be listed with LastD1Season=2026. Again, this column is only present in the men's data, so it is not found in WTeams.csv.
+
+Data Section 1 file: MSeasons.csv and WSeasons.csv
+
+These files identify the different seasons included in the historical data, along with certain season-level properties. There are separate files for men's data (MSeasons) and women's data (WSeasons).
+
+    Season - indicates the year in which the tournament was played.
+    DayZero - tells you the date corresponding to DayNum=0 during that season. All game dates have been aligned upon a common scale so that (each year) the Monday championship game of the men's tournament is on DayNum=154. Working backward, the men's national semifinals are always on DayNum=152, the men's "play-in" games are on days 134-135, Selection Sunday is on day 132, the final day of the regular season is also day 132, and so on. All game data includes the day number in order to make it easier to perform date calculations. If you need to know the exact date a game was played on, you can combine the game's "DayNum" with the season's "DayZero". For instance, since day zero during the 2011-2012 season was 10/31/2011, if we know that the earliest regular season games that year were played on DayNum=7, they were therefore played on 11/07/2011. Also note that the men's and women's data share the same DayZero each season, although the women's championship game is not necessarily played on DayNum=154
+    RegionW, RegionX, Region Y, Region Z - by our competitions' convention, each of the four regions in the final tournament is assigned a letter of W, X, Y, or Z. Whichever region's name comes first alphabetically, that region will be Region W. And whichever Region plays against Region W in the national semifinals, that will be Region X. For the other two regions, whichever region's name comes first alphabetically, that region will be Region Y, and the other will be Region Z. This allows us to identify the regions in a standardized way in other files, even if the region names change from year to year.
+
+Data Section 1 file: MNCAATourneySeeds.csv and WNCAATourneySeeds.csv
+
+These files identify the seeds for all teams in each NCAA® tournament, for all seasons of historical data. Thus, there are between 64-68 rows for each year, depending on whether there were any play-in games and how many there were. In recent years the structure has settled at 68 total teams, with four "play-in" games leading to the final field of 64 teams entering Round 1 on Thursday/Friday of the first week (by definition, that is DayNum=136/137 each season). We will not know the seeds of the respective tournament teams, or even exactly which 68 teams it will be, until Selection Sunday on March 15, 2026 (DayNum=132).
+
+    Season - the year that the tournament was played in
+    Seed - this is a 3-character or 4-character identifier of the seed, where the first character is either W, X, Y, or Z (identifying the region the team was in) and the next two digits (either 01, 02, ..., 15, or 16) tell you the seed within the region. For play-in teams, there is a fourth character (a or b) to further distinguish the seeds, since teams that face each other in the play-in games will have seeds with the same first three characters. The "a" and "b" are assigned based on which Team ID is lower numerically.
+    TeamID - this identifies the id number of the team, as specified in the MTeams.csv or WTeams.csv file
+
+Data Section 1 file: MRegularSeasonCompactResults.csv and WRegularSeasonCompactResults.csv
+
+These files identify the game-by-game results for many seasons of historical data, starting with the 1985 season for men (the first year the NCAA® had a 64-team men's tournament) and the 1998 season for women. For each season, the file includes all games played from DayNum 0 through 132. It is important to realize that the "Regular Season" games are simply defined to be all games played on DayNum=132 or earlier (DayNum=132 is Selection Sunday, and there are always a few conference tournament finals actually played early in the day on Selection Sunday itself).
+
+    Season - this is the year of the associated entry in MSeasons.csv or WSeasons.csv, namely the year in which the final tournament occurs.
+    DayNum - this integer always ranges from 0 to 132, and tells you what day the game was played on. It represents an offset from the "DayZero" date in the "MSeasons.csv" or "WSeasons.csv" file.
+    WTeamID - this identifies the id number of the team that won the game, as listed in the "MTeams.csv" or "WTeams.csv" file. No matter whether the game was won by the home team or visiting team, or if it was a neutral-site game, the "WTeamID" always identifies the winning team. Both the men's data and women's data will identify the winning team id by this WTeamID column. The same note applies to WScore and WLoc below - these are "W" for "winning" and not for "women's".
+    WScore - this identifies the number of points scored by the winning team.
+    LTeamID - this identifies the id number of the team that lost the game.
+    LScore - this identifies the number of points scored by the losing team.
+    WLoc - this identifies the "location" of the winning team. If the winning team was the home team, this value will be "H". If the winning team was the visiting (or "away") team, this value will be "A". If it was played on a neutral court, then this value will be "N".
+    NumOT - this indicates the number of overtime periods in the game, an integer 0 or higher.
+
+Data Section 1 file: MNCAATourneyCompactResults.csv and WNCAATourneyCompactResults.csv
+
+These files identify the game-by-game NCAA® tournament results for all seasons of historical data. The data is formatted exactly like the corresponding Regular Season Compact Results data. All men's games will show up as neutral site (so WLoc is always N) and some women's games will show up as neutral site, depending on the specifics.
+
+Because of the consistent structure of the NCAA® tournament schedule, you can generally tell what round a men's game was, just by looking at its day number. However, the men's 2021 tournament scheduling was slightly different, and the women's scheduling has varied a lot. Nevertheless, in general the men's schedule will be:
+
+    DayNum=134 or 135 (Tue/Wed) - play-in games to get the tournament field down to the final 64 teams
+    DayNum=136 or 137 (Thu/Fri) - Round 1, to bring the tournament field from 64 teams to 32 teams
+    DayNum=138 or 139 (Sat/Sun) - Round 2, to bring the tournament field from 32 teams to 16 teams
+    DayNum=143 or 144 (Thu/Fri) - Round 3, otherwise known as "Sweet Sixteen", to bring the tournament field from 16 teams to 8 teams
+    DayNum=145 or 146 (Sat/Sun) - Round 4, otherwise known as "Elite Eight" or "regional finals", to bring the tournament field from 8 teams to 4 teams
+    DayNum=152 (Sat) - Round 5, otherwise known as "Final Four" or "national semifinals", to bring the tournament field from 4 teams to 2 teams
+    DayNum=154 (Mon) - Round 6, otherwise known as "national final" or "national championship", to bring the tournament field from 2 teams to 1 champion team
+
+Data Section 1 file: SampleSubmissionStage1.csv and SampleSubmissionStage2.csv
+
+These files illustrate the submission file format. They reflect the simplest possible submission: a 50% winning percentage is predicted for each possible matchup. The Stage1 submission file lists all possible matchups from the last four years (seasons 2022-2025), and can be used to help develop your model. The Stage2 submission file illustrates all possible matchups for the current season, and you will need to predict these matchups for the actual tournament in March.
+
+If you want to know which predictions are needed, you can simply parse the data rows in the sample submission file.
+
+    ID - this is a 14-character string of the format SSSS_XXXX_YYYY, where SSSS is the four digit season number, XXXX is the four-digit TeamID of the lower-ID team, and YYYY is the four-digit TeamID of the higher-ID team.
+    Pred - this contains the predicted winning percentage for the first team identified in the ID field, the one represented above by XXXX.
+
+Data Section 2 - Team Box Scores
+
+This section provides game-by-game stats at a team level (free throws attempted, defensive rebounds, turnovers, etc.) for all regular season, conference tournament, and NCAA® tournament games since the 2003 season (men) or since the 2010 season (women).
+
+Team Box Scores are provided in "Detailed Results" files rather than "Compact Results" files. However, the two files are strongly related.
+
+In a Detailed Results file, the first eight columns (Season, DayNum, WTeamID, WScore, LTeamID, LScore, WLoc, and NumOT) are exactly the same as a Compact Results file. However, in a Detailed Results file, there are many additional columns. The column names should be self-explanatory to basketball fans (as above, "W" or "L" refers to the winning or losing team):
+
+    WFGM - field goals made (by the winning team)
+    WFGA - field goals attempted (by the winning team)
+    WFGM3 - three pointers made (by the winning team)
+    WFGA3 - three pointers attempted (by the winning team)
+    WFTM - free throws made (by the winning team)
+    WFTA - free throws attempted (by the winning team)
+    WOR - offensive rebounds (pulled by the winning team)
+    WDR - defensive rebounds (pulled by the winning team)
+    WAst - assists (by the winning team)
+    WTO - turnovers committed (by the winning team)
+    WStl - steals (accomplished by the winning team)
+    WBlk - blocks (accomplished by the winning team)
+    WPF - personal fouls committed (by the winning team)
+
+(and then the same set of stats from the perspective of the losing team: LFGM is the number of field goals made by the losing team, and so on up to LPF).
+
+Note: by convention, "field goals made" (either WFGM or LFGM) refers to the total number of fields goals made by a team, a combination of both two-point field goals and three-point field goals. And "three point field goals made" (either WFGM3 or LFGM3) is just the three-point fields goals made, of course. So if you want to know specifically about two-point field goals, you have to subtract one from the other (e.g., WFGM - WFGM3). And the total number of points scored is most simply expressed as (2*FGM) + FGM3 + FTM.
+
+Data Section 2 file: MRegularSeasonDetailedResults.csv and WRegularSeasonDetailedResults.csv
+
+These files provide team-level box scores for many regular seasons of historical data, starting with the 2003 season (men) or starting with the 2010 season (women). All games listed in the MRegularSeasonCompactResults file since the 2003 season should exactly be present in the MRegularSeasonDetailedResults file, and similarly, all games listed in the WRegularSeasonCompactResults file since the 2010 season should exactly be present in the WRegularSeasonDetailedResults file. However, earlier women's data is challenging to collect, and so approximately 1.5% of women's games in the 2010, 2011, and 2012 seasons are unavailable in the data. All games from 2013 to the present should have detailed results present.
+
+Data Section 2 file: MNCAATourneyDetailedResults.csv and WNCAATourneyDetailedResults.csv
+
+These files provide team-level box scores for many NCAA® tournaments, starting with the 2003 season (men) or starting with the 2010 season (women). Similarly, all games listed in the MNCAATourneyCompactResults or MNCAATourneyCompactResults file for those seasons should exactly be present in the corresponding MNCAATourneyDetailedResults or WNCAATourneyDetailedResults file.
+Data Section 3 - Geography
+
+This section provides city locations of all regular season, conference tournament, and NCAA® tournament games since the 2010 season
+
+Data Section 3 file: Cities.csv
+
+This file provides a master list of cities that have been locations for games played. Please notice that the Cities and Conferences files are the only two that don't start with an M; this is because the data files are identical between men's and women's data, so you don't need to maintain separate listings of cities or conferences across the two datasets. Also note that if you created any supplemental data in previous years on cities (latitude/longitude, altitude, city-to-city distances, etc.), the CityID's match between previous years and this year, so you should be able to re-use that information.
+
+    CityID - a four-digit ID number uniquely identifying a city.
+    City - the text name of the city.
+    State - the state abbreviation of the state that the city is in. In a few rare cases, the game location is not inside one of the 50 U.S. states and so other abbreviations are used. For instance Cancun, Mexico has a state abbreviation of MX.
+
+Data Section 3 file: MGameCities.csv and WGameCities.csv
+
+These files identify all games, starting with the 2010 season, along with the city that the game was played in. Games from the regular season, the NCAA® tourney, and other post-season tournaments (known as secondary tournaments), are all listed together. Games from the 2009 season and before are not listed in this file. Almost all games played in women's seasons 2010, 2011, and 2012 are listed, although approximately 1%-2% of games from those seasons are not easily available and are not listed. Also, last year there were a bunch of women's games with a location erroneously specified as Seattle, and those games (from Season 2025) have been corrected to the proper home courts.
+
+    Season, DayNum, WTeamID, LTeamID - these four columns are sufficient to uniquely identify each game. Additional data, such as the score of the game and other stats, can be found in the corresponding Compact Results and/or Detailed Results file.
+    CRType - this can be either Regular or NCAA or Secondary. If it is Regular, you can find more about the game in the corresponding Regular Season Compact Results and Regular Season Detailed Results files. If it is NCAA, you can find more about the game in the corresponding NCAA Tourney Compact Results and NCAA Tourney Detailed Results files. If it is Secondary, you can find more about the game in the Secondary Tourney Compact Results file.
+    CityID - the ID of the city where the game was played, as specified by the CityID column in the Cities.csv file.
+
+Data Section 4 - Public Rankings
+
+This section provides weekly team rankings (men's teams only) for dozens of top rating systems - Pomeroy, Sagarin, RPI, ESPN, etc., since the 2003 season
+
+Data Section 4 file: MMasseyOrdinals.csv
+
+This file lists ordinal rankings (e.g. #1, #2, #3, ..., #N) of men's teams going back to the 2003 season, under a large number of different ranking system methodologies. The information was gathered by Kenneth Massey and provided on his rankings page.
+
+    Season - this is the year of the associated entry in MSeasons.csv (the year in which the final tournament occurs)
+    RankingDayNum - this integer always ranges from 0 to 133, and is expressed in the same terms as a game's DayNum (where DayZero is found in the MSeasons.csv file). The RankingDayNum is intended to tell you the first day that it is appropriate to use the rankings for predicting games. For example, if RankingDayNum is 110, then the rankings ought to be based upon game outcomes up through DayNum=109, and so you can use the rankings to make predictions of games on DayNum=110 or later. The final pre-tournament rankings each year have a RankingDayNum of 133, and can thus be used to make predictions of the games from the NCAA® tournament, which generally start on DayNum=134 (the Tuesday after Selection Sunday).
+    SystemName - this is the (usually) 3-letter abbreviation for each distinct ranking system. These systems may evolve from year to year, but as a general rule they retain their meaning across the years. Near the top of the Massey rankings page (linked to above), you can find slightly longer labels describing each system, along with links to the underlying pages where the latest rankings are provided (and sometimes the calculation is described).
+    TeamID - this is the ID of the team being ranked, as described in MTeams.csv.
+    OrdinalRank - this is the overall ranking of the team in the underlying system. Most systems from recent seasons provide a complete ranking from #1 through #351, but more recently they go higher because additional teams were added to Division I in recent years.
+
+Disclaimer: If you decide to use some rankings from these Massey Ordinals to inform your predictions, be forewarned that we have no control over when they are released, and not all systems may turn out to be available in time to make pre-tournament predictions by our submission deadline.
+Data Section 5 - Supplements
+
+This section contains additional supporting information, including coaches, conference affiliations, alternative team name spellings, bracket structure, and game results for NIT and other postseason tournaments.
+
+Data Section 5 file: MTeamCoaches.csv
+
+This file indicates the head coach for each team in each season, including a start/finish range of DayNum's to indicate a mid-season coaching change. For head coaches whose term lasted many seasons, there will be many rows listed, most of which have a DayNum range of 0 to 154 for the corresponding season.
+
+    Season - this is the year of the associated entry in MSeasons.csv
+    TeamID - this is the TeamID of the team that was coached, as described in MTeams.csv.
+    FirstDayNum, LastDayNum - this defines a continuous range of days within the season, during which the indicated coach was the head coach of the team.
+    CoachName - this is a text representation of the coach's full name, in the format first_last, with underscores substituted in for spaces, and all letters being lowercase.
+
+Data Section 5 file: Conferences.csv
+
+This file indicates the Division I conferences that have existed over the years since 1985. Each conference is listed with an abbreviation and a longer name. There has been no attempt to link up conferences who merged with other conferences, or whose names changed over time.
+
+    ConfAbbrev - this is a short abbreviation for each conference; the abbreviation is used in some other files to indicate the parent conference of a team or of a conference tournament.
+    Description - this is a longer text name for the conference.
+
+Data Section 5 files: MTeamConferences.csv and WTeamConferences.csv
+
+These files indicate the conference affiliations for each team during each season. Some conferences have added or dropped teams from year to year, and these files track this information historically, for men's and women's teams separately.
+
+    Season - this is the year of the associated entry in MSeasons.csv or WSeasons.csv (the year in which the final tournament occurs)
+    TeamID - this identifies the TeamID (as described in MTeams.csv or WTeams.csv).
+    ConfAbbrev - this identifies the conference (as described in Conferences.csv).
+
+Data Section 5 file: MConferenceTourneyGames.csv and WConferenceTourneyGames.csv
+
+This file indicates which games were part of each year's post-season men's and women's conference tournaments (all of which finished on Selection Sunday or earlier), starting from the 2001 season for men's data and the 2002 season for women's data.
+
+    ConfAbbrev - this identifies the conference (as described in Conferences.csv) that the tournament was for.
+    Season, DayNum, WTeamID, LTeamID - these four columns are sufficient to uniquely identify each game. Further details about the game, such as the final score and other stats, can be found in the associated data row of the Regular Season Compact Results and/or Regular Season Detailed Results files.
+
+Data Section 5 file: MSecondaryTourneyTeams.csv and WSecondaryTourneyTeams
+
+This file identifies the teams that participated in post-season men's or women's tournaments other than the NCAA® Tournament (such events would run in parallel with the NCAA® Tournament)
+
+    Season - this is the year of the associated entry in the Seasons file (the year in which the post-season tournament was played)
+    SecondaryTourney - this is the abbreviation of the tournament, such as NIT or WNIT.
+    TeamID - this identifies the TeamID that participated in the tournament (as described in MTeams.csv or WTeams.csv).
+
+Data Section 5 file: MSecondaryTourneyCompactResults.csv and WSecondaryTourneyCompactResults
+
+This file indicates the final scores for the tournament games of "secondary" post-season tournaments. For the most part, this file is exactly like other Compact Results listings, although it also has a column for Secondary Tourney. Also note that because these games are played after DayNum=132, they are NOT listed in the Regular Season Compact Results file.
+
+    SecondaryTourney - this is the abbreviation of the tournament, which for men's data will be either NIT, CBI, CBC, CIT, V16 (which stands for Vegas 16), or TBC (which stands for The Basketball Classic), and for women's data will be either WBI, WBIT, or WNIT. Not all of these tournaments have been played every year or with the same bracket structure.
+
+Data Section 5 files: MTeamSpellings.csv and WTeamSpellings.csv
+
+These files indicate alternative spellings of many team names. They are intended for use in associating external spellings against our own TeamID numbers, thereby helping to relate the external data properly with our datasets.
+
+    TeamNameSpelling - this is the spelling of the team name. It is always expressed in all lowercase letters.
+    TeamID - this identifies the TeamID for the team that has the alternative spelling (as described in MTeams.csv or WTeams.csv).
+
+Data Section 5 files: MNCAATourneySlots and WNCAATourneySlots
+
+These files identify the mechanism by which teams are paired against each other, depending upon their seeds, as the tournament proceeds through its rounds.
+
+    Season - this is the year of the associated entry in MSeasons.csv or WSeasons.csv (the year in which the final tournament occurs).
+    Slot - this uniquely identifies one of the tournament games. For play-in games, it is a three-character string identifying the seed fulfilled by the winning team, such as W16 or Z13. For regular tournament games, it is a four-character string, where the first two characters tell you which round the game is (R1, R2, R3, R4, R5, or R6) and the second two characters tell you the expected seed of the favored team
+    StrongSeed - this indicates the expected stronger-seeded team that plays in this game. For Round 1 games, a team seed is identified in this column (as listed in the "Seed" column in the MNCAATourneySeeds.csv or WNCAATourneySeeds.csv file), whereas for subsequent games, a slot is identified in this column. In the first record of the men's file (slot R1W1), we see that seed W01 is the "StrongSeed", which during the 1985 tournament would have been Georgetown. Whereas for games from Round 2 or later, rather than a team seed, we will see a "slot" referenced in this column. So in the 33rd record of this file (slot R2W1), it tells us that the winners of slots R1W1 and R1W8 will face each other in Round 2.
+    WeakSeed - this indicates the expected weaker-seeded team that plays in this game, assuming all favored teams have won so far. For Round 1 games, a team seed is identified in this column (as listed in the "Seed" column in the MNCAATourneySeeds.csv or WNCAATourneySeeds.csv file), whereas for subsequent games, a slot is identified in this column.
+
+Data Section 5 file: MNCAATourneySeedRoundSlots.csv
+
+This file helps to represent the men's bracket structure in any given year. No matter where the play-in seeds are located, we can always know, for a given tournament seed, exactly what bracket slot they would be playing in, on each possible game round, and what the possible DayNum values would be for that round. The women's scheduling has varied a lot more and does not lend itself to this common structure and so there is not a corresponding file for the women's data. Also note that the 2021 men's tournament had unusual scheduling and did not follow the traditional assignment of DayNums for each round.
+
+    Seed - this is the tournament seed of the team.
+    GameRound - this is the round during the tournament that the game would occur in, where Round 0 (zero) is for the play-in games, Rounds 1/2 are for the first weekend, Rounds 3/4 are for the second weekend, and Rounds 5/6 are the national semifinals and finals.
+    GameSlot - this is the game slot that the team would be playing in, during the given GameRound.
+    EarlyDayNum, LateDayNum - these fields describe the earliest possible, and latest possible, DayNums that the game might be played on. Many tournament rounds span two days' time and so the expected day number for a game to be played on would be one of those two days.
+
+Files
+
+35 files
+Size
+
+181.01 MB
+Type
+
+csv
+License
+
+Attribution 4.0 International (CC BY 4.0)
+Cities.csv(9.79 kB)
+	
+	
+Label	Count
+4001.00 - 4054.10	54
+4054.10 - 4107.20	53
+4107.20 - 4160.30	53
+4160.30 - 4213.40	53
+4213.40 - 4266.50	53
+4266.50 - 4319.60	52
+4319.60 - 4372.70	53
+4372.70 - 4425.80	32
+4425.80 - 4478.90	53
+4478.90 - 4532.00	54
+4001
+4532
+	
+
+480
+unique values
+	
+NY6%
+CA6%
+Other (446)87%
+4001
+	Abilene
+	TX
+4002
+	Akron
+	OH
+4003
+	Albany
+	NY
+4004
+	Albuquerque
+	NM
+4005
+	Allentown
+	PA
+4006
+	Ames
+	IA
+4007
+	Amherst
+	MA
+4008
+	Anaheim
+	CA
+4009
+	Anchorage
+	AK
+4010
+	Ann Arbor
+	MI
+4011
+	Annapolis
+	MD
+4012
+	Arlington
+	TX
+4013
+	Asheville
+	NC
+4014
+	Athens
+	GA
+4015
+	Athens
+	OH
+4016
+	Atlanta
+	GA
+4017
+	Atlantic City
+	NJ
+4018
+	Auburn
+	AL
+4019
+	Auburn Hills
+	MI
+4020
+	Austin
+	TX
+4021
+	Bakersfield
+	CA
+4022
+	Baltimore
+	MD
+4023
+	Bangor
+	ME
+4024
+	Baton Rouge
+	LA
+4025
+	Bayamon
+	PR
+4026
+	Beaumont
+	TX
+4027
+	Berkeley
+	CA
+4028
+	Bethlehem
+	PA
+4029
+	Billings
+	MT
+4030
+	Birmingham
+	AL
+4031
+	Blacksburg
+	VA
+4032
+	Bloomington
+	IN
+4033
+	Boca Raton
+	FL
+4034
+	Boiling Springs
+	NC
+4035
+	Boise
+	ID
+4036
+	Boone
+	NC
+4037
+	Borinquen
+	PR
+4038
+	Bossier City
+	LA
+4039
+	Boston
+	MA
+4040
+	Boulder
+	CO
+4041
+	Bowling Green
+	KY
+4042
+	Bowling Green
+	OH
+4043
+	Bozeman
+	MT
+4044
+	Bridgeport
+	CT
+4045
+	Bronx
+	NY
+4046
+	Brookings
+	SD
+4047
+	Brooklyn
+	NY
+4048
+	Brooklyn Heights
+	NY
+4049
+	Buffalo
+	NY
+4050
+	Buies Creek
+	NC
+Data Explorer
+
+181.01 MB
+
+    Cities.csv
+
+    Conferences.csv
+
+    MConferenceTourneyGames.csv
+
+    MGameCities.csv
+
+    MMasseyOrdinals.csv
+
+    MNCAATourneyCompactResults.csv
+
+    MNCAATourneyDetailedResults.csv
+
+    MNCAATourneySeedRoundSlots.csv
+
+    MNCAATourneySeeds.csv
+
+    MNCAATourneySlots.csv
+
+    MRegularSeasonCompactResults.csv
+
+    MRegularSeasonDetailedResults.csv
+
+    MSeasons.csv
+
+    MSecondaryTourneyCompactResults.csv
+
+    MSecondaryTourneyTeams.csv
+
+    MTeamCoaches.csv
+
+    MTeamConferences.csv
+
+    MTeamSpellings.csv
+
+    MTeams.csv
+
+    SampleSubmissionStage1.csv
+
+    SampleSubmissionStage2.csv
+
+    WConferenceTourneyGames.csv
+
+    WGameCities.csv
+
+    WNCAATourneyCompactResults.csv
+
+    WNCAATourneyDetailedResults.csv
+
+    WNCAATourneySeeds.csv
+
+    WNCAATourneySlots.csv
+
+    WRegularSeasonCompactResults.csv
+
+    WRegularSeasonDetailedResults.csv
+
+    WSeasons.csv
+
+    WSecondaryTourneyCompactResults.csv
+
+    WSecondaryTourneyTeams.csv
+
+    WTeamConferences.csv
+
+    WTeamSpellings.csv
+
+    WTeams.csv
+
+Summary
+
+35 files
+
+280 columns
+Download using Kaggle CLI
+
+Download using kagglehub
+
+Metadata
+License
+Attribution 4.0 International (CC BY 4.0)

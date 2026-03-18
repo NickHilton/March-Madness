@@ -7,7 +7,7 @@ from elo_run.link_functions import *
 # Default model parameters
 model_params_default = {
     "rating": 1,
-    "seed": 10,
+    "seed": -10,
     "FGP": 100,
     "R": 10,
     "FGP3": 100,
@@ -52,8 +52,16 @@ def predict(team_1: dict, team_2: dict, model_params: Optional[dict] = None) -> 
     param_vec = np.empty(num_params)
 
     for n, param in enumerate(params):
-        t1_vec[n] = team_1[param]
-        t2_vec[n] = team_2[param]
+        t1_val = team_1[param]
+        t2_val = team_2[param]
+        t1_missing = t1_val is None or (isinstance(t1_val, float) and np.isnan(t1_val))
+        t2_missing = t2_val is None or (isinstance(t2_val, float) and np.isnan(t2_val))
+        # If either team is missing a stat, zero out both so the difference is 0
+        if t1_missing or t2_missing:
+            t1_val = 0.0
+            t2_val = 0.0
+        t1_vec[n] = t1_val
+        t2_vec[n] = t2_val
         param_vec[n] = model_params[param]
 
     # Value to input into link function

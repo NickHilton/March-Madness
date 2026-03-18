@@ -1,18 +1,5 @@
-from math import log
 from typing import Tuple
 import pandas as pd
-
-
-def LogLoss(pred_prob_winner: float) -> float:
-    """
-    Log loss evaluation metric.
-    Used to evaluate success by inputting the predicted probability of a
-    winner of a match
-
-    :param pred_prob_winner: (float) in range [0,1]
-    :return: (float) log loss from the prediction of the winner
-    """
-    return -1 / 2 * (log(pred_prob_winner + 0.001))  # Add padding to avoid log(0) error
 
 
 def brier_loss(pred_prob_winner: float) -> float:

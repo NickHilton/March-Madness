@@ -50,7 +50,7 @@ def load_matches():
     df2["LR"] = df2.LOR + df2.LDR
 
     # Add Secondary Tourney Results
-    if DATA_PATH == "M":
+    if DATA_PREFIX == "M":
         file_name = f"{DATA_PATH}/{DATA_PREFIX}SecondaryTourneyCompactResults.csv"
         df3 = pd.read_csv(file_name)
         df3["stage"] = "S"
