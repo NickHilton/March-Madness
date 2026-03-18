@@ -181,6 +181,11 @@ def run_study(
             seed_data = json.load(f)
         # Support both raw param files and full output files with nested "params" key
         seed_params = seed_data.get("params", seed_data)
+        # Fill in defaults for any missing params (e.g. old 9-param files)
+        defaults = {"to_margin": 0.0, "off_reb": 0.0, "def_reb": 0.0, "massey_rank": 0.0}
+        for k, v in defaults.items():
+            if k not in seed_params:
+                seed_params[k] = v
         study.enqueue_trial(seed_params)
         print(f"\n  Enqueued seed params from {enqueue}")
 
