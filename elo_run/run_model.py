@@ -28,8 +28,8 @@ model_params_default = {
     "R": 10,
     "FGP3": 100,
     "TO_margin": 0,
-    "OR": 0,
-    "DR": 0,
+    "off_reb_rate": 0,
+    "def_reb_rate": 0,
     "massey_rank": 0,
     "standard_deviation": 600,
     "link": normal_link,
@@ -213,14 +213,14 @@ def run_model_one_season(
         wteam["R"] = row.WR_avg
         wteam["FGP3"] = row.WFGP3_avg
         wteam["TO_margin"] = row.WTO_margin_avg if row.WTO_margin_avg is not None else 0
-        wteam["OR"] = row.WOR_avg if row.WOR_avg is not None else 0
-        wteam["DR"] = row.WDR_avg if row.WDR_avg is not None else 0
+        wteam["off_reb_rate"] = row.WOR_avg if row.WOR_avg is not None else 0
+        wteam["def_reb_rate"] = row.WDR_avg if row.WDR_avg is not None else 0
         lteam["FGP"] = row.LFGP_avg
         lteam["R"] = row.LR_avg
         lteam["FGP3"] = row.LFGP3_avg
         lteam["TO_margin"] = row.LTO_margin_avg if row.LTO_margin_avg is not None else 0
-        lteam["OR"] = row.LOR_avg if row.LOR_avg is not None else 0
-        lteam["DR"] = row.LDR_avg if row.LDR_avg is not None else 0
+        lteam["off_reb_rate"] = row.LOR_avg if row.LOR_avg is not None else 0
+        lteam["def_reb_rate"] = row.LDR_avg if row.LDR_avg is not None else 0
 
         w_old = wteam["rating"]
         l_old = lteam["rating"]

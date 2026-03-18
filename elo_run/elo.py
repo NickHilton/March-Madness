@@ -5,7 +5,7 @@ class ELO:
     """
 
     def __init__(
-        self, link_function, response_functions, update_function, model_params, K, alpha=0.0
+        self, link_function, response_functions, update_function, model_params, K, alpha=0.0, decay=1.0
     ):
 
         self.link = link_function
@@ -14,6 +14,7 @@ class ELO:
         self.model_params = model_params
         self.K = K
         self.alpha = alpha
+        self.decay = decay
 
     def update_rating(self, x_a, x_b, y, location):
         """

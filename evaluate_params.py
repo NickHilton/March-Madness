@@ -41,9 +41,10 @@ def run_and_report(params: dict, name: str = None, gender: str = "M") -> pd.Data
         d=params.get("d", 600.0),
         alpha=params.get("alpha", 0.0),
         to_margin=params.get("to_margin", 0.0),
-        off_reb=params.get("off_reb", 0.0),
-        def_reb=params.get("def_reb", 0.0),
+        off_reb_rate=params.get("off_reb_rate", 0.0),
+        def_reb_rate=params.get("def_reb_rate", 0.0),
         massey_rank=params.get("massey_rank", 0.0),
+        decay=params.get("decay", 1.0),
     )
 
     total_seasons = SEASON - 1 - SEASON_START + 1
@@ -86,6 +87,14 @@ def run_and_report(params: dict, name: str = None, gender: str = "M") -> pd.Data
             rating_seeds.update(new_ratings)
         else:
             rating_seeds = new_ratings
+
+        # Season decay: regress ratings toward the mean between seasons
+        if elo.decay < 1.0 and rating_seeds:
+            mean_rating = sum(rating_seeds.values()) / len(rating_seeds)
+            rating_seeds = {
+                team: elo.decay * r + (1 - elo.decay) * mean_rating
+                for team, r in rating_seeds.items()
+            }
 
         elapsed = time.time() - season_start
         n_matches = len(df)

@@ -20,8 +20,8 @@ class TeamMatchStack:
         self.season_matches = 0
         self.R = 0
         self.TO_margin = 0
-        self.OR = 0
-        self.DR = 0
+        self.off_reb_rate = 0
+        self.def_reb_rate = 0
 
         self.matches = list(self.Team.matches)
 
@@ -49,10 +49,10 @@ class TeamMatchStack:
             self.R = (self.R * self.season_matches + stats["R"]) / (self.season_matches + 1)
         if stats.get('TO_margin') is not None:
             self.TO_margin = (self.TO_margin * self.season_matches + stats["TO_margin"]) / (self.season_matches + 1)
-        if stats.get('OR') is not None:
-            self.OR = (self.OR * self.season_matches + stats["OR"]) / (self.season_matches + 1)
-        if stats.get('DR') is not None:
-            self.DR = (self.DR * self.season_matches + stats["DR"]) / (self.season_matches + 1)
+        if stats.get('off_reb_rate') is not None:
+            self.off_reb_rate = (self.off_reb_rate * self.season_matches + stats["off_reb_rate"]) / (self.season_matches + 1)
+        if stats.get('def_reb_rate') is not None:
+            self.def_reb_rate = (self.def_reb_rate * self.season_matches + stats["def_reb_rate"]) / (self.season_matches + 1)
         self.Season = stats["Season"]
         self.season_matches = self.season_matches + 1
 
@@ -70,8 +70,8 @@ class TeamMatchStack:
                     match.WFGP_avg = self.FGP
                     match.WR_avg = self.R
                     match.WTO_margin_avg = self.TO_margin
-                    match.WOR_avg = self.OR
-                    match.WDR_avg = self.DR
+                    match.WOR_avg = self.off_reb_rate
+                    match.WDR_avg = self.def_reb_rate
                     session.merge(match)
                     self._season_averages(stats)
 
@@ -83,8 +83,8 @@ class TeamMatchStack:
                     match.LFGP_avg = self.FGP
                     match.LR_avg = self.R
                     match.LTO_margin_avg = self.TO_margin
-                    match.LOR_avg = self.OR
-                    match.LDR_avg = self.DR
+                    match.LOR_avg = self.off_reb_rate
+                    match.LDR_avg = self.def_reb_rate
                     session.merge(match)
                     self._season_averages(stats)
 

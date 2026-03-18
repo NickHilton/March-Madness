@@ -12,8 +12,8 @@ model_params_default = {
     "R": 10,
     "FGP3": 100,
     "TO_margin": 0,
-    "OR": 0,
-    "DR": 0,
+    "off_reb_rate": 0,
+    "def_reb_rate": 0,
     "massey_rank": 0,
     "standard_deviation": 600,
     "link": normal_link,
@@ -36,16 +36,15 @@ def predict(team_1: dict, team_2: dict, model_params: Optional[dict] = None) -> 
 
     # Team rating, Field goal percentage, average rebounds,
     # 3 point field goal percentage
-    params = ["rating", "FGP", "R", "FGP3", "TO_margin", "OR", "DR"]
+    params = ["rating", "FGP", "R", "FGP3", "TO_margin", "off_reb_rate", "def_reb_rate"]
 
-    if use_seeds:
-        # Add in seed information
-        params.append("seed")
-
-    # Massey composite rank — only when both teams have rankings
+    # Massey composite rank replaces seed when available (men's)
+    # Falls back to seed for women's (no Massey data)
     use_massey = team_1.get("massey_rank") and team_2.get("massey_rank")
     if use_massey:
         params.append("massey_rank")
+    elif use_seeds:
+        params.append("seed")
         #
         # # For a 1 vs 16 seed give the 1 seed a 99% predicted probability
         # if team_1["seed"] - team_2["seed"] >= 15:

@@ -162,6 +162,13 @@ class Match(Base):
         stats["Loc"] = self.WLoc
         # Turnover margin: opponent TOs - my TOs (positive = good)
         stats["TO_margin"] = (self.LTO or 0) - (self.WTO or 0)
+        # Rebound rates: what % of available rebounds do you grab?
+        w_or = self.WOR or 0
+        l_dr = self.LDR or 0
+        w_dr = self.WDR or 0
+        l_or = self.LOR or 0
+        stats["off_reb_rate"] = w_or / (w_or + l_dr) if (w_or + l_dr) > 0 else 0.0
+        stats["def_reb_rate"] = w_dr / (w_dr + l_or) if (w_dr + l_or) > 0 else 0.0
         return stats
 
     def losing_stats(self):
@@ -192,4 +199,11 @@ class Match(Base):
         stats["Loc"] = location_switch[self.WLoc]
         # Turnover margin: opponent TOs - my TOs (positive = good)
         stats["TO_margin"] = (self.WTO or 0) - (self.LTO or 0)
+        # Rebound rates: what % of available rebounds do you grab?
+        l_or = self.LOR or 0
+        w_dr = self.WDR or 0
+        l_dr = self.LDR or 0
+        w_or = self.WOR or 0
+        stats["off_reb_rate"] = l_or / (l_or + w_dr) if (l_or + w_dr) > 0 else 0.0
+        stats["def_reb_rate"] = l_dr / (l_dr + w_or) if (l_dr + w_or) > 0 else 0.0
         return stats

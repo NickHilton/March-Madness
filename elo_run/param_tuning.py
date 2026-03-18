@@ -57,8 +57,8 @@ def set_default_params() -> tuple:
 def set_up_elo_model(
         k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float,
         d: float = 600.0, alpha: float = 0.0,
-        to_margin: float = 0.0, off_reb: float = 0.0, def_reb: float = 0.0,
-        massey_rank: float = 0.0,
+        to_margin: float = 0.0, off_reb_rate: float = 0.0, def_reb_rate: float = 0.0,
+        massey_rank: float = 0.0, decay: float = 1.0,
 ) -> ELO:
     """
     Set up an elo system and model with given params
@@ -82,8 +82,8 @@ def set_up_elo_model(
         "R": r,
         "FGP3": fgp3,
         "TO_margin": to_margin,
-        "OR": off_reb,
-        "DR": def_reb,
+        "off_reb_rate": off_reb_rate,
+        "def_reb_rate": def_reb_rate,
         "massey_rank": massey_rank,
         "standard_deviation": d,
         "link": link_function,
@@ -97,6 +97,7 @@ def set_up_elo_model(
         model_params=model_params,
         K=k,
         alpha=alpha,
+        decay=decay,
     )
 
     return elo
@@ -155,6 +156,14 @@ def run_system(elo: ELO, end_season: int = SEASON - 1) -> pd.DataFrame:
             rating_seeds.update(new_ratings)
         else:
             rating_seeds = new_ratings
+
+        # Season decay: regress ratings toward the mean between seasons
+        if elo.decay < 1.0 and rating_seeds:
+            mean_rating = sum(rating_seeds.values()) / len(rating_seeds)
+            rating_seeds = {
+                team: elo.decay * r + (1 - elo.decay) * mean_rating
+                for team, r in rating_seeds.items()
+            }
 
         season += 1
 

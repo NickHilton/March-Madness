@@ -10,9 +10,10 @@
     "d": 1199.335203487813,
     "alpha": 0.3470909670733663,
     "to_margin": 0.0,
-    "off_reb": 0.0,
-    "def_reb": 0.0,
-    "massey_rank": 0.0
+    "off_reb_rate": 0.0,
+    "def_reb_rate": 0.0,
+    "massey_rank": 0.0,
+    "decay": 1.0
   },
   "womens": {
     "k": 328,
@@ -25,8 +26,9 @@
     "d": 933.2969815722572,
     "alpha": 8.10173049056416e-05,
     "to_margin": 0.0,
-    "off_reb": 0.0,
-    "def_reb": 0.0,
-    "massey_rank": 0.0
+    "off_reb_rate": 0.0,
+    "def_reb_rate": 0.0,
+    "massey_rank": 0.0,
+    "decay": 1.0
   }
 }

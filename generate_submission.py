@@ -610,9 +610,10 @@ def main():
         k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=reb, rating=rating,
         d=dp.get("d", 600.0), alpha=dp.get("alpha", 0.0),
         to_margin=dp.get("to_margin", 0.0),
-        off_reb=dp.get("off_reb", 0.0),
-        def_reb=dp.get("def_reb", 0.0),
+        off_reb_rate=dp.get("off_reb_rate", 0.0),
+        def_reb_rate=dp.get("def_reb_rate", 0.0),
         massey_rank=dp.get("massey_rank", 0.0),
+        decay=dp.get("decay", 1.0),
     )
 
     # Run model to get match predictions
