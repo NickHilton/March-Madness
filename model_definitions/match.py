@@ -72,6 +72,10 @@ class Match(Base):
     WTO_margin_avg = Column(Float)
     WOR_avg = Column(Float)
     WDR_avg = Column(Float)
+    WFGP_against_avg = Column(Float)
+    WFGP3_against_avg = Column(Float)
+    WFGP_adj_avg = Column(Float)
+    WFGP3_adj_avg = Column(Float)
     WAst = Column(Integer)
     WTO = Column(Integer)
     WStl = Column(Integer)
@@ -94,6 +98,10 @@ class Match(Base):
     LTO_margin_avg = Column(Float)
     LOR_avg = Column(Float)
     LDR_avg = Column(Float)
+    LFGP_against_avg = Column(Float)
+    LFGP3_against_avg = Column(Float)
+    LFGP_adj_avg = Column(Float)
+    LFGP3_adj_avg = Column(Float)
     LAst = Column(Integer)
     LTO = Column(Integer)
     LStl = Column(Integer)
@@ -169,6 +177,9 @@ class Match(Base):
         l_or = self.LOR or 0
         stats["off_reb_rate"] = w_or / (w_or + l_dr) if (w_or + l_dr) > 0 else 0.0
         stats["def_reb_rate"] = w_dr / (w_dr + l_or) if (w_dr + l_or) > 0 else 0.0
+        # What opponent shot against this team's defense
+        stats["FGP_against"] = self.LFGP
+        stats["FGP3_against"] = self.LFGP3
         return stats
 
     def losing_stats(self):
@@ -206,4 +217,7 @@ class Match(Base):
         w_or = self.WOR or 0
         stats["off_reb_rate"] = l_or / (l_or + w_dr) if (l_or + w_dr) > 0 else 0.0
         stats["def_reb_rate"] = l_dr / (l_dr + w_or) if (l_dr + w_or) > 0 else 0.0
+        # What opponent shot against this team's defense
+        stats["FGP_against"] = self.WFGP
+        stats["FGP3_against"] = self.WFGP3
         return stats

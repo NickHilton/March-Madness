@@ -22,6 +22,8 @@ class TeamMatchStack:
         self.TO_margin = 0
         self.off_reb_rate = 0
         self.def_reb_rate = 0
+        self.FGP_against = 0
+        self.FGP3_against = 0
 
         self.matches = list(self.Team.matches)
 
@@ -53,6 +55,10 @@ class TeamMatchStack:
             self.off_reb_rate = (self.off_reb_rate * self.season_matches + stats["off_reb_rate"]) / (self.season_matches + 1)
         if stats.get('def_reb_rate') is not None:
             self.def_reb_rate = (self.def_reb_rate * self.season_matches + stats["def_reb_rate"]) / (self.season_matches + 1)
+        if stats.get('FGP_against'):
+            self.FGP_against = (self.FGP_against * self.season_matches + stats["FGP_against"]) / (self.season_matches + 1)
+        if stats.get('FGP3_against'):
+            self.FGP3_against = (self.FGP3_against * self.season_matches + stats["FGP3_against"]) / (self.season_matches + 1)
         self.Season = stats["Season"]
         self.season_matches = self.season_matches + 1
 
@@ -72,6 +78,8 @@ class TeamMatchStack:
                     match.WTO_margin_avg = self.TO_margin
                     match.WOR_avg = self.off_reb_rate
                     match.WDR_avg = self.def_reb_rate
+                    match.WFGP_against_avg = self.FGP_against
+                    match.WFGP3_against_avg = self.FGP3_against
                     session.merge(match)
                     self._season_averages(stats)
 
@@ -85,6 +93,8 @@ class TeamMatchStack:
                     match.LTO_margin_avg = self.TO_margin
                     match.LOR_avg = self.off_reb_rate
                     match.LDR_avg = self.def_reb_rate
+                    match.LFGP_against_avg = self.FGP_against
+                    match.LFGP3_against_avg = self.FGP3_against
                     session.merge(match)
                     self._season_averages(stats)
 

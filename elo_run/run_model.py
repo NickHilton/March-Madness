@@ -209,15 +209,15 @@ def run_model_one_season(
         wteam["rating"] = teams[wteam_id]["rating"]
         lteam["rating"] = teams[lteam_id]["rating"]
 
-        wteam["FGP"] = row.WFGP_avg
+        wteam["FGP"] = row.WFGP_adj_avg if row.WFGP_adj_avg is not None else (row.WFGP_avg or 0)
         wteam["R"] = row.WR_avg
-        wteam["FGP3"] = row.WFGP3_avg
+        wteam["FGP3"] = row.WFGP3_adj_avg if row.WFGP3_adj_avg is not None else (row.WFGP3_avg or 0)
         wteam["TO_margin"] = row.WTO_margin_avg if row.WTO_margin_avg is not None else 0
         wteam["off_reb_rate"] = row.WOR_avg if row.WOR_avg is not None else 0
         wteam["def_reb_rate"] = row.WDR_avg if row.WDR_avg is not None else 0
-        lteam["FGP"] = row.LFGP_avg
+        lteam["FGP"] = row.LFGP_adj_avg if row.LFGP_adj_avg is not None else (row.LFGP_avg or 0)
         lteam["R"] = row.LR_avg
-        lteam["FGP3"] = row.LFGP3_avg
+        lteam["FGP3"] = row.LFGP3_adj_avg if row.LFGP3_adj_avg is not None else (row.LFGP3_avg or 0)
         lteam["TO_margin"] = row.LTO_margin_avg if row.LTO_margin_avg is not None else 0
         lteam["off_reb_rate"] = row.LOR_avg if row.LOR_avg is not None else 0
         lteam["def_reb_rate"] = row.LDR_avg if row.LDR_avg is not None else 0
