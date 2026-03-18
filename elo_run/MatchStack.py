@@ -35,6 +35,12 @@ class MatchStack:
                     Match.LR_avg,
                     Match.LFGP_avg,
                     Match.LFGP3_avg,
+                    Match.WTO_margin_avg,
+                    Match.LTO_margin_avg,
+                    Match.WOR_avg,
+                    Match.LOR_avg,
+                    Match.WDR_avg,
+                    Match.LDR_avg,
                 )
                 .filter(Match.Season == Season)
                 # Only include regular season and tournament games

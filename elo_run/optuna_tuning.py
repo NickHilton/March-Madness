@@ -40,6 +40,10 @@ def objective(trial: optuna.Trial) -> float:
     rating = trial.suggest_float("rating", 0.1, 10, log=True)
     d = trial.suggest_float("d", 200, 1200)
     alpha = trial.suggest_float("alpha", 0.0, 1.0)
+    to_margin = trial.suggest_float("to_margin", 0, 500)
+    off_reb = trial.suggest_float("off_reb", 0, 500)
+    def_reb = trial.suggest_float("def_reb", 0, 500)
+    massey_rank = trial.suggest_float("massey_rank", -50, 0)
 
     link_function = link_function_list[link]
 
@@ -47,6 +51,8 @@ def objective(trial: optuna.Trial) -> float:
         k=k, seed=seed, link_function=link_function,
         fgp=fgp, fgp3=fgp3, r=reb, rating=rating,
         d=d, alpha=alpha,
+        to_margin=to_margin, off_reb=off_reb, def_reb=def_reb,
+        massey_rank=massey_rank,
     )
 
     # Run all seasons and collect tournament Brier losses
@@ -86,15 +92,16 @@ def _format_trial_row(t):
     return (
         f"  {t.number:>4} {t.value:>10.6f} {p['k']:>5} {p['seed']:>7.1f} {p['link']:>4} "
         f"{p['fgp']:>8.0f} {p['fgp3']:>8.1f} {p['reb']:>7.1f} {p['rating']:>7.2f} "
-        f"{p['d']:>7.0f} {p['alpha']:>6.3f}"
+        f"{p['d']:>7.0f} {p['alpha']:>6.3f} {p['to_margin']:>6.0f} {p['off_reb']:>6.0f} {p['def_reb']:>6.0f} {p['massey_rank']:>6.1f}"
     )
 
 
 LEADERBOARD_HEADER = (
     f"  {'#':>4} {'Brier':>10} {'k':>5} {'seed':>7} {'link':>4} {'fgp':>8} "
-    f"{'fgp3':>8} {'reb':>7} {'rating':>7} {'d':>7} {'alpha':>6}"
+    f"{'fgp3':>8} {'reb':>7} {'rating':>7} {'d':>7} {'alpha':>6} "
+    f"{'TO_m':>6} {'OR':>6} {'DR':>6} {'mRank':>6}"
 )
-LEADERBOARD_SEP = f"  {'-'*80}"
+LEADERBOARD_SEP = f"  {'-'*105}"
 
 
 class ProgressCallback:
@@ -232,6 +239,10 @@ def run_study(
         "reb": best["reb"],
         "d": best["d"],
         "alpha": best["alpha"],
+        "to_margin": best["to_margin"],
+        "off_reb": best["off_reb"],
+        "def_reb": best["def_reb"],
+        "massey_rank": best["massey_rank"],
     }
 
     print(f"\n  Running backtest with best params...")
@@ -241,6 +252,8 @@ def run_study(
         fgp=params_out["fgp"], fgp3=params_out["fgp3"],
         r=params_out["reb"], rating=params_out["rating"],
         d=params_out["d"], alpha=params_out["alpha"],
+        to_margin=params_out["to_margin"], off_reb=params_out["off_reb"],
+        def_reb=params_out["def_reb"], massey_rank=params_out["massey_rank"],
     )
     best_predictions = run_system(best_elo, end_season=SEASON - 1)
 

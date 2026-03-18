@@ -21,6 +21,8 @@ stat_dict = {
     "WFGP3_avg": "FGP3_avg",
     "WR": "R",
     "WR_avg": "R_avg",
+    "WOR": "OR",
+    "WDR": "DR",
     "LTeamID": "TeamID",
     "LScore": "Score",
     "LFGP": "FGP",
@@ -29,6 +31,8 @@ stat_dict = {
     "LFGP3_avg": "FGP3_avg",
     "LR": "R",
     "LR_avg": "R_avg",
+    "LOR": "OR",
+    "LDR": "DR",
 }
 
 location_switch = {"H": "A", "N": "N", "A": "H"}
@@ -65,6 +69,9 @@ class Match(Base):
     WDR = Column(Integer)
     WR = Column(Integer)
     WR_avg = Column(Float)
+    WTO_margin_avg = Column(Float)
+    WOR_avg = Column(Float)
+    WDR_avg = Column(Float)
     WAst = Column(Integer)
     WTO = Column(Integer)
     WStl = Column(Integer)
@@ -84,6 +91,9 @@ class Match(Base):
     LDR = Column(Integer)
     LR = Column(Float)
     LR_avg = Column(Float)
+    LTO_margin_avg = Column(Float)
+    LOR_avg = Column(Float)
+    LDR_avg = Column(Float)
     LAst = Column(Integer)
     LTO = Column(Integer)
     LStl = Column(Integer)
@@ -145,9 +155,13 @@ class Match(Base):
             "WFGP3_avg",
             "WR",
             "WR_avg",
+            "WOR",
+            "WDR",
         ]
         stats = self._return_stats(cats)
         stats["Loc"] = self.WLoc
+        # Turnover margin: opponent TOs - my TOs (positive = good)
+        stats["TO_margin"] = (self.LTO or 0) - (self.WTO or 0)
         return stats
 
     def losing_stats(self):
@@ -170,8 +184,12 @@ class Match(Base):
             "LFGP3_avg",
             "LR",
             "LR_avg",
+            "LOR",
+            "LDR",
         ]
 
         stats = self._return_stats(cats)
         stats["Loc"] = location_switch[self.WLoc]
+        # Turnover margin: opponent TOs - my TOs (positive = good)
+        stats["TO_margin"] = (self.WTO or 0) - (self.LTO or 0)
         return stats

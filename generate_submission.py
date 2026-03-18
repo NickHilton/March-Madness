@@ -83,6 +83,9 @@ def get_most_recent_stats(season):
             Match.WR_avg,
             MatchPredictions.WTeamRatingAfter,
             Match.mdid,
+            Match.WTO_margin_avg,
+            Match.WOR_avg,
+            Match.WDR_avg,
         )
         .join(w_q, and_(Match.WTeamID == w_q.c.TeamID, Match.mdid == w_q.c.mdid))
         .join(MatchPredictions)
@@ -97,6 +100,9 @@ def get_most_recent_stats(season):
             Match.LR_avg,
             MatchPredictions.LTeamRatingAfter,
             Match.mdid,
+            Match.LTO_margin_avg,
+            Match.LOR_avg,
+            Match.LDR_avg,
         )
         .join(l_q, and_(Match.LTeamID == l_q.c.TeamID, Match.mdid == l_q.c.mdid))
         .join(MatchPredictions)
@@ -106,7 +112,7 @@ def get_most_recent_stats(season):
     session.close()
 
     all_stats = winners + losers
-    df = pd.DataFrame(all_stats, columns=["TeamID", "FGP3", "FGP", "R", "rating", "mdid"])
+    df = pd.DataFrame(all_stats, columns=["TeamID", "FGP3", "FGP", "R", "rating", "mdid", "TO_margin", "OR", "DR"])
     # Keep the most recent entry per team (last win or last loss, whichever is later)
     df = df.sort_values("mdid").drop_duplicates(subset="TeamID", keep="last").drop(columns="mdid")
     df.set_index("TeamID", inplace=True, drop=True)
@@ -595,25 +601,20 @@ def main():
     if args.gamble_team:
         print(f"Gamble: team {args.gamble_team} through round {args.gamble_round}")
 
-    # Set up ELO model
-    d_param = 600.0
-    alpha_param = 0.0
-
-    # Try to get d and alpha from eval record or default params
-    if args.eval_id:
-        # These would come from the params dict if stored
-        pass
-    elif not args.params:
-        # Load from default_params.json
+    # Set up ELO model - load extended params from default_params.json
+    dp = {}
+    if not args.eval_id and not args.params:
         with open("default_params.json") as f:
             all_default = json.load(f)
         dp = all_default.get(gender_key, {})
-        d_param = dp.get("d", 600.0)
-        alpha_param = dp.get("alpha", 0.0)
 
     elo = set_up_elo_model(
         k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=reb, rating=rating,
-        d=d_param, alpha=alpha_param,
+        d=dp.get("d", 600.0), alpha=dp.get("alpha", 0.0),
+        to_margin=dp.get("to_margin", 0.0),
+        off_reb=dp.get("off_reb", 0.0),
+        def_reb=dp.get("def_reb", 0.0),
+        massey_rank=dp.get("massey_rank", 0.0),
     )
 
     # Run model to get match predictions

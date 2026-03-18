@@ -57,6 +57,8 @@ def set_default_params() -> tuple:
 def set_up_elo_model(
         k: int, seed: int, link_function: callable, fgp: float, fgp3: float, r: float, rating: float,
         d: float = 600.0, alpha: float = 0.0,
+        to_margin: float = 0.0, off_reb: float = 0.0, def_reb: float = 0.0,
+        massey_rank: float = 0.0,
 ) -> ELO:
     """
     Set up an elo system and model with given params
@@ -79,6 +81,10 @@ def set_up_elo_model(
         "FGP": fgp,
         "R": r,
         "FGP3": fgp3,
+        "TO_margin": to_margin,
+        "OR": off_reb,
+        "DR": def_reb,
+        "massey_rank": massey_rank,
         "standard_deviation": d,
         "link": link_function,
     }

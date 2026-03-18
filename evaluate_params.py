@@ -40,6 +40,10 @@ def run_and_report(params: dict, name: str = None, gender: str = "M") -> pd.Data
         rating=params["rating"],
         d=params.get("d", 600.0),
         alpha=params.get("alpha", 0.0),
+        to_margin=params.get("to_margin", 0.0),
+        off_reb=params.get("off_reb", 0.0),
+        def_reb=params.get("def_reb", 0.0),
+        massey_rank=params.get("massey_rank", 0.0),
     )
 
     total_seasons = SEASON - 1 - SEASON_START + 1

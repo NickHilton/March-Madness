@@ -7,6 +7,7 @@ from sqlalchemy import func, and_
 from sqlalchemy.orm import sessionmaker
 
 from models import engine, Seed, Match, Team, MatchPredictions
+from .massey import get_massey_ranks
 from .MatchStack import MatchStack
 from .link import predict
 from .link_functions import *
@@ -26,6 +27,10 @@ model_params_default = {
     "FGP": 100,
     "R": 10,
     "FGP3": 100,
+    "TO_margin": 0,
+    "OR": 0,
+    "DR": 0,
+    "massey_rank": 0,
     "standard_deviation": 600,
     "link": normal_link,
 }
@@ -141,9 +146,12 @@ def set_up(Season: int, rating_seeds: Optional[dict] = None):
     else:
         default_rating = DEFAULT_RATING
 
+    massey_ranks = get_massey_ranks(Season)
+
     for TeamID in team_ids:
         team_info[TeamID]["seed"] = team_to_seed.get(TeamID, None)
         team_info[TeamID]["rating"] = rating_seeds.get(TeamID, default_rating)
+        team_info[TeamID]["massey_rank"] = massey_ranks.get(TeamID, None)
 
     season_match_stack = MatchStack(Season)
 
@@ -151,6 +159,8 @@ def set_up(Season: int, rating_seeds: Optional[dict] = None):
 
     matches_df["WSeed"] = matches_df.WTeamID.map(team_to_seed)
     matches_df["LSeed"] = matches_df.LTeamID.map(team_to_seed)
+    matches_df["WMassey"] = matches_df.WTeamID.map(massey_ranks)
+    matches_df["LMassey"] = matches_df.LTeamID.map(massey_ranks)
 
     session.close()
 
@@ -193,15 +203,24 @@ def run_model_one_season(
         else:
             lteam["seed"] = None
 
+        wteam["massey_rank"] = row.WMassey if pd.notna(row.WMassey) else None
+        lteam["massey_rank"] = row.LMassey if pd.notna(row.LMassey) else None
+
         wteam["rating"] = teams[wteam_id]["rating"]
         lteam["rating"] = teams[lteam_id]["rating"]
 
         wteam["FGP"] = row.WFGP_avg
         wteam["R"] = row.WR_avg
         wteam["FGP3"] = row.WFGP3_avg
+        wteam["TO_margin"] = row.WTO_margin_avg if row.WTO_margin_avg is not None else 0
+        wteam["OR"] = row.WOR_avg if row.WOR_avg is not None else 0
+        wteam["DR"] = row.WDR_avg if row.WDR_avg is not None else 0
         lteam["FGP"] = row.LFGP_avg
         lteam["R"] = row.LR_avg
         lteam["FGP3"] = row.LFGP3_avg
+        lteam["TO_margin"] = row.LTO_margin_avg if row.LTO_margin_avg is not None else 0
+        lteam["OR"] = row.LOR_avg if row.LOR_avg is not None else 0
+        lteam["DR"] = row.LDR_avg if row.LDR_avg is not None else 0
 
         w_old = wteam["rating"]
         l_old = lteam["rating"]
