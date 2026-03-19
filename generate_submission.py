@@ -528,6 +528,12 @@ def main():
         help="Evaluation record ID (or prefix) to pull params from the DB",
     )
     parser.add_argument(
+        "--candidate",
+        type=str,
+        default=None,
+        help="Path to candidate_params JSON file (e.g. candidate_params/260318T172856_optuna_best_mens.json)",
+    )
+    parser.add_argument(
         "--params",
         type=str,
         default=None,
@@ -563,57 +569,81 @@ def main():
                     winner_key = info["winner"]  # "a" or "b"
                     args.first_four_results[slot] = info[winner_key]["id"]
 
-    # Parse model params from eval ID, --params, or default_params.json
-    if args.eval_id:
-        print(f"Loading params from evaluation: {args.eval_id}")
+    # All model params with defaults
+    PARAM_DEFAULTS = {
+        "k": 25, "seed": -35.0, "link": "N", "fgp": 1200.0, "fgp3": 0.0,
+        "reb": 20.0, "rating": 5.0, "d": 600.0, "alpha": 0.0,
+        "to_margin": 0.0, "off_reb_rate": 0.0, "def_reb_rate": 0.0,
+        "massey_rank": 0.0, "decay": 1.0,
+    }
+
+    # Parse model params from candidate file, eval ID, --params, or default_params.json
+    source = "defaults"
+    dp = dict(PARAM_DEFAULTS)
+
+    if args.candidate:
+        source = args.candidate
+        with open(args.candidate) as f:
+            candidate_data = json.load(f)
+        # Support both {params: {...}} and flat {...} formats
+        file_params = candidate_data.get("params", candidate_data)
+        dp.update(file_params)
+        # Handle old key names
+        if "off_reb" in dp and "off_reb_rate" not in file_params:
+            dp["off_reb_rate"] = dp.pop("off_reb", 0.0)
+        if "def_reb" in dp and "def_reb_rate" not in file_params:
+            dp["def_reb_rate"] = dp.pop("def_reb", 0.0)
+    elif args.eval_id:
+        source = f"eval:{args.eval_id}"
         params = load_params_from_eval(args.eval_id)
-        k = params["k"]
-        seed = params["seed"]
-        link = params["link"]
-        fgp = params["FGP"]
-        reb = params["R"]
-        fgp3 = params["FGP3"]
-        rating = params["rating"]
-        dp = {}
+        dp.update({"k": params["k"], "seed": params["seed"], "link": params["link"],
+                    "fgp": params["FGP"], "reb": params["R"], "fgp3": params["FGP3"],
+                    "rating": params["rating"]})
     elif args.params:
+        source = "--params"
         vals = args.params.split("\t")
-        k = int(vals[0])
-        seed = float(vals[1])
-        link = vals[2]
-        fgp = float(vals[3])
-        reb = float(vals[4])
-        fgp3 = float(vals[5])
-        rating = float(vals[6])
-        dp = {}
+        dp.update({"k": int(vals[0]), "seed": float(vals[1]), "link": vals[2],
+                    "fgp": float(vals[3]), "reb": float(vals[4]), "fgp3": float(vals[5]),
+                    "rating": float(vals[6])})
     else:
-        # Load all params from default_params.json
+        source = "default_params.json"
         with open("default_params.json") as f:
             all_default = json.load(f)
-        dp = all_default.get(gender_key, {})
-        k = dp.get("k", 25)
-        seed = dp.get("seed", -35.0)
-        link = dp.get("link", "N")
-        fgp = dp.get("fgp", 1200.0)
-        reb = dp.get("reb", 20.0)
-        fgp3 = dp.get("fgp3", 0.0)
-        rating = dp.get("rating", 5.0)
+        dp.update(all_default.get(gender_key, {}))
 
-    link_function = link_function_list[link]
+    # Print param report
+    print(f"\n  Gender: {gender}")
+    print(f"  Season: {season}")
+    print(f"  Source: {source}")
+    if args.candidate and "backtest" in candidate_data:
+        bt = candidate_data["backtest"]
+        print(f"  Backtest: Brier={bt.get('mean_brier_loss')}  Correct={bt.get('mean_correct_pct')}")
+        if "meta" in candidate_data:
+            print(f"  Git: {candidate_data['meta'].get('git_hash', '?')[:7]}  Dirty: {candidate_data['meta'].get('git_dirty')}")
+    print()
+    print(f"  {'Param':<15} {'Value':>15} {'Default':>15} {'Source':>10}")
+    print(f"  {'-'*58}")
+    for param, default in PARAM_DEFAULTS.items():
+        val = dp[param]
+        is_default = (val == default)
+        src = "default" if is_default else "file"
+        val_str = f"{val}" if isinstance(val, str) else f"{val:.6g}"
+        def_str = f"{default}" if isinstance(default, str) else f"{default:.6g}"
+        print(f"  {param:<15} {val_str:>15} {def_str:>15} {src:>10}")
+    print()
 
-    print(f"Gender: {gender}")
-    print(f"Season: {season}")
-    print(f"Params: k={k}, seed={seed}, link={link}, FGP={fgp}, R={reb}, FGP3={fgp3}, rating={rating}")
     if args.gamble_team:
-        print(f"Gamble: team {args.gamble_team} through round {args.gamble_round}")
+        print(f"  Gamble: team {args.gamble_team} through round {args.gamble_round}")
+
+    link_function = link_function_list[dp["link"]]
 
     elo = set_up_elo_model(
-        k=k, seed=seed, link_function=link_function, fgp=fgp, fgp3=fgp3, r=reb, rating=rating,
-        d=dp.get("d", 600.0), alpha=dp.get("alpha", 0.0),
-        to_margin=dp.get("to_margin", 0.0),
-        off_reb_rate=dp.get("off_reb_rate", 0.0),
-        def_reb_rate=dp.get("def_reb_rate", 0.0),
-        massey_rank=dp.get("massey_rank", 0.0),
-        decay=dp.get("decay", 1.0),
+        k=dp["k"], seed=dp["seed"], link_function=link_function,
+        fgp=dp["fgp"], fgp3=dp["fgp3"], r=dp["reb"], rating=dp["rating"],
+        d=dp["d"], alpha=dp["alpha"],
+        to_margin=dp["to_margin"], off_reb_rate=dp["off_reb_rate"],
+        def_reb_rate=dp["def_reb_rate"], massey_rank=dp["massey_rank"],
+        decay=dp["decay"],
     )
 
     # Run model to get match predictions
@@ -743,8 +773,8 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
     description = args.description
 
-    ids_path = f"submissions/ids/{gender[0]}_{description}_{timestamp}_{k}_{seed}_{link}_{fgp}_{fgp3}_{reb}.csv"
-    names_path = f"submissions/names/{gender[0]}_{description}_{timestamp}_{k}_{seed}_{link}_{fgp}_{fgp3}_{reb}.csv"
+    ids_path = f"submissions/ids/{gender[0]}_{description}_{timestamp}.csv"
+    names_path = f"submissions/names/{gender[0]}_{description}_{timestamp}.csv"
 
     final_out_df.to_csv(ids_path, index=False)
 
