@@ -116,8 +116,8 @@ STARTS_MENS = {
     },
     "box_score_heavy": {
         "k": 100, "seed": -30, "link": "N", "fgp": 5000, "fgp3": 3000,
-        "reb": 200, "rating": 0.3, "d": 900, "alpha": 0.3,
-        "to_margin": 300, "off_reb_rate": 2000, "def_reb_rate": 2000,
+        "reb": 5, "rating": 0.3, "d": 900, "alpha": 0.3,
+        "to_margin": 300, "off_reb_rate": 3000, "def_reb_rate": 3000,
         "massey_rank": -25, "decay": 0.85, "cal_a": 1.0,
     },
     "aggressive_decay": {
@@ -161,7 +161,7 @@ STARTS_WOMENS = {
     },
     "box_score_heavy": {
         "k": 250, "seed": -40, "link": "L", "fgp": 5000, "fgp3": 3000,
-        "reb": 300, "rating": 0.5, "d": 800, "alpha": 0.1,
+        "reb": 5, "rating": 0.5, "d": 800, "alpha": 0.1,
         "to_margin": 300, "off_reb_rate": 3000, "def_reb_rate": 3000,
         "massey_rank": 0, "decay": 0.85, "cal_a": 1.0,
     },

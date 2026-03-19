@@ -595,6 +595,8 @@ def main():
             dp["def_reb_rate"] = dp.pop("def_reb", 0.0)
     elif args.eval_id:
         source = f"eval:{args.eval_id}"
+        print(f"  WARNING: --eval-id only loads 7 basic params from DB (k, seed, link, FGP, R, FGP3, rating).")
+        print(f"  Use --candidate with a JSON file to load all params including d, alpha, decay, massey, etc.")
         params = load_params_from_eval(args.eval_id)
         dp.update({"k": params["k"], "seed": params["seed"], "link": params["link"],
                     "fgp": params["FGP"], "reb": params["R"], "fgp3": params["FGP3"],
