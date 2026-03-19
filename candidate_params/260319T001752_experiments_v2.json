@@ -1,0 +1,175 @@
+{
+  "leaderboard": [
+    {
+      "rank": 1,
+      "name": "04_platt_calibration",
+      "brier": 0.12908379805731823,
+      "vs_baseline": 0.063416
+    },
+    {
+      "rank": 2,
+      "name": "05_variable_k",
+      "brier": 0.1918880669326641,
+      "vs_baseline": 0.000612
+    },
+    {
+      "rank": 3,
+      "name": "06_median_eval",
+      "brier": 0.19215622760618245,
+      "vs_baseline": 0.000344
+    },
+    {
+      "rank": 4,
+      "name": "02_recency_weighting",
+      "brier": 0.1922976904951871,
+      "vs_baseline": 0.000202
+    },
+    {
+      "rank": 5,
+      "name": "03_ensemble_massey",
+      "brier": 0.19308091729469748,
+      "vs_baseline": -0.000581
+    },
+    {
+      "rank": 6,
+      "name": "07_parametric_response",
+      "brier": 0.19350435114710818,
+      "vs_baseline": -0.001004
+    },
+    {
+      "rank": 7,
+      "name": "01_loocv_median",
+      "brier": 0.19495778668671654,
+      "vs_baseline": -0.002458
+    }
+  ],
+  "experiments": [
+    {
+      "name": "01_loocv_median",
+      "best_brier": 0.19495778668671654,
+      "best_trial": 0,
+      "n_completed": 50,
+      "duration_s": 289.5,
+      "best_params": {
+        "k": 35,
+        "seed": -59.44,
+        "link": "N",
+        "rating": 5.9,
+        "d": 1129.0,
+        "alpha": 0.44,
+        "massey_rank": -10.41,
+        "decay": 0.71
+      }
+    },
+    {
+      "name": "02_recency_weighting",
+      "best_brier": 0.1922976904951871,
+      "best_trial": 14,
+      "n_completed": 50,
+      "duration_s": 185.6,
+      "best_params": {
+        "k": 15,
+        "late_k_mult": 2.0724856537865706,
+        "seed": -0.16242290390636072,
+        "link": "L",
+        "rating": 9.378372048916185,
+        "d": 1387.0165586781895,
+        "alpha": 0.34397502898754556,
+        "massey_rank": -8.918405365612855,
+        "decay": 0.7386878526452614
+      }
+    },
+    {
+      "name": "03_ensemble_massey",
+      "best_brier": 0.19308091729469748,
+      "best_trial": 34,
+      "n_completed": 50,
+      "duration_s": 228.2,
+      "best_params": {
+        "k": 40,
+        "seed": -64.74890670720649,
+        "link": "N",
+        "rating": 5.716397706493422,
+        "d": 1050.3220159571881,
+        "alpha": 0.8162729397210682,
+        "decay": 0.999613704388896,
+        "massey_weight": 0.2505353650508283,
+        "massey_spread": 109.78640672694108
+      }
+    },
+    {
+      "name": "04_platt_calibration",
+      "best_brier": 0.12908379805731823,
+      "best_trial": 31,
+      "n_completed": 50,
+      "duration_s": 160.4,
+      "best_params": {
+        "k": 75,
+        "seed": -47.37059640750404,
+        "link": "B",
+        "rating": 0.812048631187021,
+        "d": 928.9179236245662,
+        "alpha": 0.0701226191432625,
+        "massey_rank": -29.83390570075477,
+        "decay": 0.8097575778133305,
+        "cal_a": 1.432272472353693,
+        "cal_b": 0.4894391533632981
+      }
+    },
+    {
+      "name": "05_variable_k",
+      "best_brier": 0.1918880669326641,
+      "best_trial": 44,
+      "n_completed": 50,
+      "duration_s": 207.5,
+      "best_params": {
+        "k_regular": 11,
+        "k_boost": 1.2773527913193652,
+        "seed": -19.57738637796005,
+        "link": "L",
+        "rating": 5.593192128405334,
+        "d": 1037.754295926314,
+        "alpha": 0.6971654921176608,
+        "massey_rank": -5.6879157960306665,
+        "decay": 0.9438034137403347
+      }
+    },
+    {
+      "name": "06_median_eval",
+      "best_brier": 0.19215622760618245,
+      "best_trial": 22,
+      "n_completed": 50,
+      "duration_s": 229.4,
+      "best_params": {
+        "k": 43,
+        "seed": -22.564757904711257,
+        "link": "N",
+        "rating": 3.2658792319336847,
+        "d": 1106.1958981229495,
+        "alpha": 0.670869395843154,
+        "massey_rank": -8.286181274641331,
+        "decay": 0.8754176151220023
+      }
+    },
+    {
+      "name": "07_parametric_response",
+      "best_brier": 0.19350435114710818,
+      "best_trial": 0,
+      "n_completed": 50,
+      "duration_s": 218.8,
+      "best_params": {
+        "k": 35,
+        "seed": -59.44,
+        "link": "N",
+        "rating": 5.9,
+        "d": 1129.0,
+        "alpha": 0.44,
+        "massey_rank": -10.41,
+        "decay": 0.71,
+        "resp_spread": 10.0
+      }
+    }
+  ],
+  "baseline_brier": 0.1925,
+  "n_trials": 50
+}
