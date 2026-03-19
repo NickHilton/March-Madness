@@ -2,6 +2,7 @@ import argparse
 import datetime
 import json
 import os
+import sqlite3
 import sys
 from collections import defaultdict
 from typing import Dict, Set
@@ -161,6 +162,7 @@ def generate_predictions(
     remaining_first_four_teams,
     gamble_team=None,
     gamble_round=0,
+    gambles=None,
 ):
     """
     Generate pairwise predictions for all possible tournament matchups.
@@ -244,12 +246,19 @@ def generate_predictions(
                     # Predict matchup
                     prediction = elo.predict(team_1_stats, team_2_stats)
 
-                    # Apply gamble override
+                    # Apply gamble overrides
                     if gamble_team and rd <= gamble_round:
                         if team_1 == gamble_team:
                             prediction = 0.98
                         if team_2 == gamble_team:
                             prediction = 0.02
+                    if gambles:
+                        for g_team, g_round, g_prob in gambles:
+                            if rd <= g_round:
+                                if team_1 == g_team:
+                                    prediction = g_prob
+                                elif team_2 == g_team:
+                                    prediction = 1 - g_prob
 
                     # Save prediction
                     matchup_id = f"{season}_{team_1}_{team_2}"
@@ -513,13 +522,20 @@ def main():
         "--gamble-team",
         type=int,
         default=None,
-        help="Team ID to override predictions for",
+        help="Team ID to override predictions for (legacy, use --gamble instead)",
     )
     parser.add_argument(
         "--gamble-round",
         type=int,
         default=3,
         help="Override predictions through this round (default: 3)",
+    )
+    parser.add_argument(
+        "--gamble",
+        type=str,
+        action="append",
+        default=None,
+        help="Cinderella gamble: TEAM_ID:ROUND:PROB (e.g. 1385:5:0.99 = St John's 99%% through F4). Can repeat.",
     )
     parser.add_argument(
         "--eval-id",
@@ -635,7 +651,25 @@ def main():
     print()
 
     if args.gamble_team:
-        print(f"  Gamble: team {args.gamble_team} through round {args.gamble_round}")
+        print(f"  Gamble (legacy): team {args.gamble_team} through round {args.gamble_round}")
+
+    # Parse --gamble flags
+    gambles = []
+    round_names = {1: "R64", 2: "R32", 3: "S16", 4: "E8", 5: "F4", 6: "Championship"}
+    if args.gamble:
+        conn_g = sqlite3.connect(os.environ["DATABASE_URL"].replace("sqlite:///", ""))
+        team_names_g = dict(conn_g.execute("SELECT TeamID, TeamName FROM teams").fetchall())
+        conn_g.close()
+        print("  Cinderella gambles:")
+        for g in args.gamble:
+            parts = g.split(":")
+            g_team = int(parts[0])
+            g_round = int(parts[1])
+            g_prob = float(parts[2])
+            gambles.append((g_team, g_round, g_prob))
+            name = team_names_g.get(g_team, g_team)
+            print(f"    {name} ({g_team}): {g_prob:.0%} through {round_names.get(g_round, f'R{g_round}')}")
+        print()
 
     link_function = link_function_list[dp["link"]]
 
@@ -750,6 +784,7 @@ def main():
         remaining_first_four_teams=remaining_first_four_teams,
         gamble_team=args.gamble_team,
         gamble_round=args.gamble_round,
+        gambles=gambles if gambles else None,
     )
 
     # Build submission with non-tournament matchups filled from sample
