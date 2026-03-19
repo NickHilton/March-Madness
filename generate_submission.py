@@ -263,15 +263,28 @@ def generate_predictions(
                     # Save prediction
                     matchup_id = f"{season}_{team_1}_{team_2}"
 
+                    # Check which teams are gamble-frozen this round
+                    gamble_teams_this_round = set()
+                    if gamble_team and rd <= gamble_round:
+                        gamble_teams_this_round.add(gamble_team)
+                    if gambles:
+                        for g_team, g_round, _ in gambles:
+                            if rd <= g_round:
+                                gamble_teams_this_round.add(g_team)
+
                     # Update ratings probabilistically
                     if rd < 6:
                         point_diff = 8
                         result_likelihood = max(
                             elo.response(point_diff, "N"), prediction + 0.02
                         )
-                        team_1_new = elo.update(
-                            prediction, result_likelihood, team_1_rating, elo.K
-                        )
+                        # Freeze rating for gamble teams (use current rating, not updated)
+                        if team_1 in gamble_teams_this_round:
+                            team_1_new = team_1_rating
+                        else:
+                            team_1_new = elo.update(
+                                prediction, result_likelihood, team_1_rating, elo.K
+                            )
 
                         prob_playing_opponent = round_to_team_id_to_prob[rd][team_2]
 
@@ -286,9 +299,12 @@ def generate_predictions(
                         result_likelihood = max(
                             elo.response(point_diff, "N"), 1 - prediction + 0.02
                         )
-                        team_2_new = elo.update(
-                            1 - prediction, result_likelihood, team_2_rating, elo.K
-                        )
+                        if team_2 in gamble_teams_this_round:
+                            team_2_new = team_2_rating
+                        else:
+                            team_2_new = elo.update(
+                                1 - prediction, result_likelihood, team_2_rating, elo.K
+                            )
 
                         prob_playing_opponent = round_to_team_id_to_prob[rd][team_1]
 
