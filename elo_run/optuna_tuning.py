@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 
+import numpy as np
 import optuna
 import pandas as pd
 
@@ -45,6 +46,8 @@ def objective(trial: optuna.Trial) -> float:
     def_reb_rate = trial.suggest_float("def_reb_rate", 0, 5000)
     massey_rank = trial.suggest_float("massey_rank", -50, 0)
     decay = trial.suggest_float("decay", 0.5, 1.0)
+    cal_a = trial.suggest_float("cal_a", 0.5, 2.0)
+    cal_b = trial.suggest_float("cal_b", -0.5, 0.5)
 
     link_function = link_function_list[link]
 
@@ -58,6 +61,12 @@ def objective(trial: optuna.Trial) -> float:
 
     # Run all seasons and collect tournament Brier losses
     match_predictions = run_system(elo, end_season=SEASON - 1)
+
+    # Apply Platt calibration: calibrated = sigmoid(a * logit(p) + b)
+    if cal_a != 1.0 or cal_b != 0.0:
+        p = match_predictions["PredProbWTeam"].clip(0.001, 0.999)
+        logit_p = np.log(p / (1 - p))
+        match_predictions["PredProbWTeam"] = 1 / (1 + np.exp(-(cal_a * logit_p + cal_b)))
 
     losses = []
     step = 0
@@ -94,13 +103,14 @@ def _format_trial_row(t):
         f"  {t.number:>4} {t.value:>10.6f} {p['k']:>5} {p['seed']:>7.1f} {p['link']:>4} "
         f"{p['fgp']:>8.0f} {p['fgp3']:>8.1f} {p['reb']:>7.1f} {p['rating']:>7.2f} "
         f"{p['d']:>7.0f} {p['alpha']:>6.3f} {p['to_margin']:>6.0f} {p['off_reb_rate']:>6.0f} {p['def_reb_rate']:>6.0f} {p['massey_rank']:>6.1f} {p['decay']:>5.2f}"
+        f" {p['cal_a']:>5.2f} {p['cal_b']:>5.2f}"
     )
 
 
 LEADERBOARD_HEADER = (
     f"  {'#':>4} {'Brier':>10} {'k':>5} {'seed':>7} {'link':>4} {'fgp':>8} "
     f"{'fgp3':>8} {'reb':>7} {'rating':>7} {'d':>7} {'alpha':>6} "
-    f"{'TO_m':>6} {'ORr':>6} {'DRr':>6} {'mRank':>6} {'decay':>5}"
+    f"{'TO_m':>6} {'ORr':>6} {'DRr':>6} {'mRank':>6} {'decay':>5} {'calA':>5} {'calB':>5}"
 )
 LEADERBOARD_SEP = f"  {'-'*105}"
 
@@ -183,7 +193,7 @@ def run_study(
         # Support both raw param files and full output files with nested "params" key
         seed_params = seed_data.get("params", seed_data)
         # Fill in defaults for any missing params (e.g. old 9-param files)
-        defaults = {"to_margin": 0.0, "off_reb_rate": 0.0, "def_reb_rate": 0.0, "massey_rank": 0.0, "decay": 1.0}
+        defaults = {"to_margin": 0.0, "off_reb_rate": 0.0, "def_reb_rate": 0.0, "massey_rank": 0.0, "decay": 1.0, "cal_a": 1.0, "cal_b": 0.0}
         # Fix zero values for log-scale params (Optuna can't enqueue 0 for log distributions)
         log_params_min = {"fgp": 500, "reb": 5, "rating": 0.1}
         for p, minval in log_params_min.items():
@@ -255,6 +265,8 @@ def run_study(
         "def_reb_rate": best["def_reb_rate"],
         "massey_rank": best["massey_rank"],
         "decay": best["decay"],
+        "cal_a": best["cal_a"],
+        "cal_b": best["cal_b"],
     }
 
     print(f"\n  Running backtest with best params...")
@@ -269,6 +281,14 @@ def run_study(
         decay=params_out["decay"],
     )
     best_predictions = run_system(best_elo, end_season=SEASON - 1)
+
+    # Apply calibration to backtest predictions
+    best_cal_a = params_out["cal_a"]
+    best_cal_b = params_out["cal_b"]
+    if best_cal_a != 1.0 or best_cal_b != 0.0:
+        p = best_predictions["PredProbWTeam"].clip(0.001, 0.999)
+        logit_p = np.log(p / (1 - p))
+        best_predictions["PredProbWTeam"] = 1 / (1 + np.exp(-(best_cal_a * logit_p + best_cal_b)))
 
     backtest = {}
     all_losses = []
