@@ -47,7 +47,7 @@ def objective(trial: optuna.Trial) -> float:
     massey_rank = trial.suggest_float("massey_rank", -50, 0)
     decay = trial.suggest_float("decay", 0.5, 1.0)
     cal_a = trial.suggest_float("cal_a", 0.5, 2.0)
-    cal_b = trial.suggest_float("cal_b", -0.5, 0.5)
+    cal_b = 0.0
 
     link_function = link_function_list[link]
 
@@ -193,7 +193,7 @@ def run_study(
         # Support both raw param files and full output files with nested "params" key
         seed_params = seed_data.get("params", seed_data)
         # Fill in defaults for any missing params (e.g. old 9-param files)
-        defaults = {"to_margin": 0.0, "off_reb_rate": 0.0, "def_reb_rate": 0.0, "massey_rank": 0.0, "decay": 1.0, "cal_a": 1.0, "cal_b": 0.0}
+        defaults = {"to_margin": 0.0, "off_reb_rate": 0.0, "def_reb_rate": 0.0, "massey_rank": 0.0, "decay": 1.0, "cal_a": 1.0}
         # Fix zero values for log-scale params (Optuna can't enqueue 0 for log distributions)
         log_params_min = {"fgp": 500, "reb": 5, "rating": 0.1}
         for p, minval in log_params_min.items():
@@ -266,7 +266,7 @@ def run_study(
         "massey_rank": best["massey_rank"],
         "decay": best["decay"],
         "cal_a": best["cal_a"],
-        "cal_b": best["cal_b"],
+        "cal_b": 0.0,
     }
 
     print(f"\n  Running backtest with best params...")
