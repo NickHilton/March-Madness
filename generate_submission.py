@@ -78,8 +78,8 @@ def get_most_recent_stats(season):
     winners = list(
         session.query(
             Match.WTeamID,
-            Match.WFGP3_avg,
-            Match.WFGP_avg,
+            Match.WFGP3_adj_avg,
+            Match.WFGP_adj_avg,
             Match.WR_avg,
             MatchPredictions.WTeamRatingAfter,
             Match.mdid,
@@ -95,8 +95,8 @@ def get_most_recent_stats(season):
     losers = list(
         session.query(
             Match.LTeamID,
-            Match.LFGP3_avg,
-            Match.LFGP_avg,
+            Match.LFGP3_adj_avg,
+            Match.LFGP_adj_avg,
             Match.LR_avg,
             MatchPredictions.LTeamRatingAfter,
             Match.mdid,
@@ -112,7 +112,7 @@ def get_most_recent_stats(season):
     session.close()
 
     all_stats = winners + losers
-    df = pd.DataFrame(all_stats, columns=["TeamID", "FGP3", "FGP", "R", "rating", "mdid", "TO_margin", "OR", "DR"])
+    df = pd.DataFrame(all_stats, columns=["TeamID", "FGP3", "FGP", "R", "rating", "mdid", "TO_margin", "off_reb_rate", "def_reb_rate"])
     # Keep the most recent entry per team (last win or last loss, whichever is later)
     df = df.sort_values("mdid").drop_duplicates(subset="TeamID", keep="last").drop(columns="mdid")
     df.set_index("TeamID", inplace=True, drop=True)
@@ -646,7 +646,19 @@ def main():
     # Get most recent stats
     dancer_to_stats = get_most_recent_stats(season)
     full_df = dancers_df.merge(dancer_to_stats, left_index=True, right_index=True)
+
+    # Add Massey composite ranks
+    from elo_run.massey import get_massey_ranks
+    massey = get_massey_ranks(season)
+    full_df["massey_rank"] = full_df.index.map(lambda tid: massey.get(tid, None))
+
     dancers_dicts = full_df.to_dict(orient="index")
+
+    # Fill None/NaN defaults for features the model needs
+    for tid, dd in dancers_dicts.items():
+        for key in ["TO_margin", "off_reb_rate", "def_reb_rate", "FGP", "FGP3", "R"]:
+            if dd.get(key) is None or (isinstance(dd.get(key), float) and pd.isna(dd[key])):
+                dd[key] = 0.0
 
     # Get seeds and resolve first four
     df_seeds = pd.read_csv(f"{data_path}NCAATourneySeeds.csv").query(
