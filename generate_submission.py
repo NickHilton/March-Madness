@@ -187,12 +187,21 @@ def generate_predictions(
     round_to_team_id_to_rating: Dict[int, Dict[int, float]] = defaultdict(
         lambda: defaultdict(float)
     )
+    # Store initial ratings for gamble-frozen teams
+    gamble_frozen_ratings: Dict[int, float] = {}
     for team_id, dd in dancers_dicts.items():
         if team_id in remaining_first_four_teams:
             r = 0
         else:
             r = 1
         round_to_team_id_to_rating[r][team_id] = dd["rating"]
+
+    # Record frozen ratings for gamble teams
+    if gambles:
+        for g_team, g_round, _ in gambles:
+            gamble_frozen_ratings[g_team] = dancers_dicts[g_team]["rating"]
+    if gamble_team:
+        gamble_frozen_ratings[gamble_team] = dancers_dicts[gamble_team]["rating"]
 
     # Set up record of probability of a team reaching round N
     round_to_team_id_to_prob: Dict[int, Dict[int, float]] = defaultdict(
@@ -278,13 +287,9 @@ def generate_predictions(
                         result_likelihood = max(
                             elo.response(point_diff, "N"), prediction + 0.02
                         )
-                        # Freeze rating for gamble teams (use current rating, not updated)
-                        if team_1 in gamble_teams_this_round:
-                            team_1_new = team_1_rating
-                        else:
-                            team_1_new = elo.update(
-                                prediction, result_likelihood, team_1_rating, elo.K
-                            )
+                        team_1_new = elo.update(
+                            prediction, result_likelihood, team_1_rating, elo.K
+                        )
 
                         prob_playing_opponent = round_to_team_id_to_prob[rd][team_2]
 
@@ -299,12 +304,9 @@ def generate_predictions(
                         result_likelihood = max(
                             elo.response(point_diff, "N"), 1 - prediction + 0.02
                         )
-                        if team_2 in gamble_teams_this_round:
-                            team_2_new = team_2_rating
-                        else:
-                            team_2_new = elo.update(
-                                1 - prediction, result_likelihood, team_2_rating, elo.K
-                            )
+                        team_2_new = elo.update(
+                            1 - prediction, result_likelihood, team_2_rating, elo.K
+                        )
 
                         prob_playing_opponent = round_to_team_id_to_prob[rd][team_1]
 
@@ -314,6 +316,12 @@ def generate_predictions(
                         round_to_team_id_to_prob[rd + 1][team_2] += (
                             (1 - prediction) * prob_playing_opponent
                         ) * round_to_team_id_to_prob[rd][team_2]
+
+                    # After all opponents processed for this round, override
+                    # gamble-frozen teams back to their original rating
+                    for frozen_id, frozen_rating in gamble_frozen_ratings.items():
+                        if frozen_id in gamble_teams_this_round and rd < 6:
+                            round_to_team_id_to_rating[rd + 1][frozen_id] = frozen_rating
 
                     predictions.append((matchup_id, prediction))
                     predictions_named.append(
@@ -551,7 +559,9 @@ def main():
         type=str,
         action="append",
         default=None,
-        help="Cinderella gamble: TEAM_ID:ROUND:PROB (e.g. 1385:5:0.99 = St John's 99%% through F4). Can repeat.",
+        help="Cinderella gamble: TEAM_ID:ROUND:PROB — team reaches ROUND with PROB. "
+             "Rounds: 2=R32, 3=S16, 4=E8, 5=F4, 6=Chmp, 7=Win. Can repeat. "
+             "e.g. 1385:5:0.99 = St John's 99%% to reach F4, model predicts from there.",
     )
     parser.add_argument(
         "--eval-id",
@@ -680,11 +690,13 @@ def main():
         for g in args.gamble:
             parts = g.split(":")
             g_team = int(parts[0])
-            g_round = int(parts[1])
+            reach_round = int(parts[1])
             g_prob = float(parts[2])
+            # "reach round N" means override through round N-1
+            g_round = reach_round - 1
             gambles.append((g_team, g_round, g_prob))
             name = team_names_g.get(g_team, g_team)
-            print(f"    {name} ({g_team}): {g_prob:.0%} through {round_names.get(g_round, f'R{g_round}')}")
+            print(f"    {name} ({g_team}): {g_prob:.0%} to reach {round_names.get(reach_round, f'R{reach_round}')}, model predicts from there")
         print()
 
     link_function = link_function_list[dp["link"]]
