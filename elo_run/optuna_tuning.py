@@ -103,14 +103,14 @@ def _format_trial_row(t):
         f"  {t.number:>4} {t.value:>10.6f} {p['k']:>5} {p['seed']:>7.1f} {p['link']:>4} "
         f"{p['fgp']:>8.0f} {p['fgp3']:>8.1f} {p['reb']:>7.1f} {p['rating']:>7.2f} "
         f"{p['d']:>7.0f} {p['alpha']:>6.3f} {p['to_margin']:>6.0f} {p['off_reb_rate']:>6.0f} {p['def_reb_rate']:>6.0f} {p['massey_rank']:>6.1f} {p['decay']:>5.2f}"
-        f" {p['cal_a']:>5.2f} {p['cal_b']:>5.2f}"
+        f" {p['cal_a']:>5.2f}"
     )
 
 
 LEADERBOARD_HEADER = (
     f"  {'#':>4} {'Brier':>10} {'k':>5} {'seed':>7} {'link':>4} {'fgp':>8} "
     f"{'fgp3':>8} {'reb':>7} {'rating':>7} {'d':>7} {'alpha':>6} "
-    f"{'TO_m':>6} {'ORr':>6} {'DRr':>6} {'mRank':>6} {'decay':>5} {'calA':>5} {'calB':>5}"
+    f"{'TO_m':>6} {'ORr':>6} {'DRr':>6} {'mRank':>6} {'decay':>5} {'calA':>5}"
 )
 LEADERBOARD_SEP = f"  {'-'*105}"
 
